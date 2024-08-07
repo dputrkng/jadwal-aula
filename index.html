@@ -122,21 +122,6 @@
         </div>
 
         <div class="form-group">
-            <label for="date">Tanggal:</label>
-            <input type="date" id="date" name="date" required>
-        </div>
-
-        <div class="form-group">
-            <label for="startTime">Waktu Mulai:</label>
-            <input type="time" id="startTime" name="startTime" required>
-        </div>
-
-        <div class="form-group">
-            <label for="endTime">Waktu Selesai:</label>
-            <input type="time" id="endTime" name="endTime" required>
-        </div>
-
-        <div class="form-group">
             <label for="bidang">Bidang:</label>
             <select id="bidang" name="bidang" required>
                 <option value="CK">Cipta Karya</option>
@@ -158,6 +143,21 @@
         </div>
 
         <div class="form-group">
+            <label for="date">Tanggal:</label>
+            <input type="date" id="date" name="date" required>
+        </div>
+
+        <div class="form-group">
+            <label for="startTime">Waktu Mulai:</label>
+            <input type="time" id="startTime" name="startTime" required>
+        </div>
+
+        <div class="form-group">
+            <label for="endTime">Waktu Selesai:</label>
+            <input type="time" id="endTime" name="endTime" required>
+        </div>
+
+        <div class="form-group">
             <label for="purpose">Keperluan:</label>
             <input type="text" id="purpose" name="purpose" required>
         </div>
@@ -170,8 +170,8 @@
         <caption>Daftar Jadwal Pemakaian Ruangan</caption>
         <thead>
             <tr>
-                <th>Tanggal</th>
                 <th>Ruangan</th>
+                <th>Tanggal</th>
                 <th>Waktu Mulai</th>
                 <th>Waktu Selesai</th>
                 <th>Keperluan</th>
@@ -265,8 +265,8 @@
                         if (booking.date >= today) {
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                                <td>${booking.date}</td>
                                 <td>${booking.room}</td>
+                                <td>${booking.date}</td>
                                 <td>${booking.startTime}</td>
                                 <td>${booking.endTime}</td>
                                 <td>${booking.purpose}</td>
