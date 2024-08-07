@@ -220,15 +220,19 @@
                         location.reload(); // Tambahkan fungsi refresh
                     } else {
                         // Simpan pemesanan ke Firestore
-                        db.collection('bookings').add({
-                            room, date, startTime, endTime, purpose, bidang, pic
-                        }).then(() => {
-                            form.reset();
-                            updateSchedule();
-                        });
-                    }
-                });
-        });
+                    db.collection('bookings').add({
+                        room, date, startTime, endTime, endDate, purpose, bidang, pic
+                    }).then(() => {
+                        form.reset();
+                        updateSchedule();
+                        alert('Data berhasil di-entry!');
+                    }).catch(error => {
+                        console.error('Error adding document: ', error);
+                        alert('Terjadi kesalahan saat menyimpan data!');
+                    });
+                }
+            });
+    });
 
         function updateSchedule() {
             scheduleTableBody.innerHTML = '';
