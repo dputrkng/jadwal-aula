@@ -67,6 +67,9 @@
             const endTime = form.endTime.value;
             const purpose = form.purpose.value;
 
+            // Debugging: Log data form submission
+            console.log('Form submitted:', { room, date, startTime, endTime, purpose });
+
             // Cek bentrok jadwal
             db.collection('bookings')
                 .where('room', '==', room)
@@ -111,6 +114,9 @@
 
         // Initial call to display bookings
         updateSchedule();
+
+        // Debugging: Verify Firebase initialization
+        console.log('Firebase initialized:', firebaseConfig);
     </script>
 </body>
 </html>
