@@ -245,6 +245,7 @@
                 .then(querySnapshot => {
                     querySnapshot.forEach(doc => {
                         const booking = doc.data();
+                        console.log('Booking data:', booking); // Debugging: Log data dari Firestore
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${booking.date}</td>
@@ -257,6 +258,8 @@
                         `;
                         scheduleTableBody.appendChild(row);
                     });
+                }).catch(error => {
+                    console.error('Error getting documents: ', error);
                 });
         }
 
