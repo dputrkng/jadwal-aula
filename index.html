@@ -123,6 +123,10 @@
         <input type="time" id="endTime" name="endTime" required>
         <br>
 
+        <label for="endDate">Tanggal Selesai:</label>
+        <input type="date" id="endDate" name="endDate" required>
+        <br>
+
         <label for="purpose">Keperluan:</label>
         <input type="text" id="purpose" name="purpose" required>
         <br>
@@ -154,9 +158,10 @@
         <thead>
             <tr>
                 <th>Tanggal</th>
-                <th>Ruangan</th>
                 <th>Waktu Mulai</th>
                 <th>Waktu Selesai</th>
+                <th>Tanggal Selesai</th>
+                <th>Ruangan</th>
                 <th>Keperluan</th>
                 <th>Bidang</th>
                 <th>PIC Booking</th>
@@ -192,12 +197,13 @@
             const date = form.date.value;
             const startTime = form.startTime.value;
             const endTime = form.endTime.value;
+            const endDate = form.endDate.value;
             const purpose = form.purpose.value;
             const bidang = form.bidang.value;
             const pic = form.pic.value;
 
             // Debugging: Log data form submission
-            console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
+            console.log('Form submitted:', { room, date, startTime, endTime, endDate, purpose, bidang, pic });
 
             // Cek bentrok jadwal
             db.collection('bookings')
@@ -221,7 +227,7 @@
                     } else {
                         // Simpan pemesanan ke Firestore
                         db.collection('bookings').add({
-                            room, date, startTime, endTime, purpose, bidang, pic
+                            room, date, startTime, endTime, endDate, purpose, bidang, pic
                         }).then(() => {
                             form.reset();
                             updateSchedule();
@@ -238,9 +244,10 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${booking.date}</td>
-                        <td>${booking.room}</td>
                         <td>${booking.startTime}</td>
                         <td>${booking.endTime}</td>
+                        <td>${booking.endDate}</td>
+                        <td>${booking.room}</td>
                         <td>${booking.purpose}</td>
                         <td>${booking.bidang}</td>
                         <td>${booking.pic}</td>
