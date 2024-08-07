@@ -27,9 +27,17 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            max-width: 800px;
             width: 100%;
             margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 220px;
         }
 
         label {
@@ -44,7 +52,7 @@
         select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
@@ -59,6 +67,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -103,48 +112,55 @@
 <body>
     <h2>Form Jadwal Pemakaian Ruangan</h2>
     <form id="bookingForm">
-        <label for="room">Ruangan:</label>
-        <select id="room" name="room" required>
-            <option value="Ruang A">Aula Atas</option>
-            <option value="Ruang B">Ruang Rapat Bawah</option>
-            <option value="Ruang C">Aula Luar</option>
-        </select>
-        <br>
+        <div class="form-group">
+            <label for="room">Ruangan:</label>
+            <select id="room" name="room" required>
+                <option value="Ruang A">Aula Atas</option>
+                <option value="Ruang B">Ruang Rapat Bawah</option>
+                <option value="Ruang C">Aula Luar</option>
+            </select>
+        </div>
 
-        <label for="date">Tanggal:</label>
-        <input type="date" id="date" name="date" required>
-        <br>
+        <div class="form-group">
+            <label for="date">Tanggal:</label>
+            <input type="date" id="date" name="date" required>
+        </div>
 
-        <label for="startTime">Waktu Mulai:</label>
-        <input type="time" id="startTime" name="startTime" required>
-        <br>
+        <div class="form-group">
+            <label for="startTime">Waktu Mulai:</label>
+            <input type="time" id="startTime" name="startTime" required>
+        </div>
 
-        <label for="endTime">Waktu Selesai:</label>
-        <input type="time" id="endTime" name="endTime" required>
-        <br>
+        <div class="form-group">
+            <label for="endTime">Waktu Selesai:</label>
+            <input type="time" id="endTime" name="endTime" required>
+        </div>
 
-        <label for="purpose">Keperluan:</label>
-        <input type="text" id="purpose" name="purpose" required>
-        <br>
+        <div class="form-group">
+            <label for="pic">PIC Booking:</label>
+            <input type="text" id="pic" name="pic" required>
+        </div>
 
-        <label for="bidang">Bidang:</label>
-        <select id="bidang" name="bidang" required>
-            <option value="CK">Cipta Karya</option>
-            <option value="BM">Bina Marga</option>
-            <option value="TR">Tata Ruang</option>
-            <option value="Jakon">Bina konstruksi</option>
-            <option value="SDA">Sumber Daya Alam</option>
-            <option value="Sekret">Sekret</option>
-            <option value="Umum">Umum & Kepegawaian</option>
-            <option value="Keuangan">Keuangan</option>
-            <option value="Program">Program</option>
-            <option value="Sekret">UPTD</option>
-        </select>
-        <br>
+        <div class="form-group">
+            <label for="bidang">Bidang:</label>
+            <select id="bidang" name="bidang" required>
+                <option value="CK">Cipta Karya</option>
+                <option value="BM">Bina Marga</option>
+                <option value="TR">Tata Ruang</option>
+                <option value="Jakon">Bina konstruksi</option>
+                <option value="SDA">Sumber Daya Alam</option>
+                <option value="Sekret">Sekret</option>
+                <option value="Umum">Umum & Kepegawaian</option>
+                <option value="Keuangan">Keuangan</option>
+                <option value="Program">Program</option>
+                <option value="Sekret">UPTD</option>
+            </select>
+        </div>
 
-        <label for="pic">PIC Booking:</label>
-        <input type="text" id="pic" name="pic" required>
-        <br>
+        <div class="form-group">
+            <label for="purpose">Keperluan:</label>
+            <input type="text" id="purpose" name="purpose" required>
+        </div>
 
         <button type="submit">Pesan Ruangan</button>
     </form>
@@ -236,26 +252,31 @@
         });
 
         function updateSchedule() {
-            const today = new Date().toISOString().split('T')[0]; // Mendapatkan tanggal hari ini dalam format YYYY-MM-DD
             scheduleTableBody.innerHTML = '';
-            db.collection('bookings').orderBy('room').orderBy('date').orderBy('startTime').get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    const booking = doc.data();
-                    if (booking.date >= today) { // Hanya tampilkan data yang tanggalnya tidak lewat
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${booking.date}</td>
-                            <td>${booking.room}</td>
-                            <td>${booking.startTime}</td>
-                            <td>${booking.endTime}</td>
-                            <td>${booking.purpose}</td>
-                            <td>${booking.bidang}</td>
-                            <td>${booking.pic}</td>
-                        `;
-                        scheduleTableBody.appendChild(row);
-                    }
+            const today = new Date().toISOString().split('T')[0];
+            db.collection('bookings')
+                .orderBy('room')
+                .orderBy('date')
+                .orderBy('startTime')
+                .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const booking = doc.data();
+                        if (booking.date >= today) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${booking.date}</td>
+                                <td>${booking.room}</td>
+                                <td>${booking.startTime}</td>
+                                <td>${booking.endTime}</td>
+                                <td>${booking.purpose}</td>
+                                <td>${booking.bidang}</td>
+                                <td>${booking.pic}</td>
+                            `;
+                            scheduleTableBody.appendChild(row);
+                        }
+                    });
                 });
-            });
         }
 
         // Initial call to display bookings
