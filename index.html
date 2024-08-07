@@ -214,7 +214,7 @@
 
                 querySnapshot.forEach(doc => {
                     const booking = doc.data();
-                    
+
                     // Konversi string ke objek Date
                     const bookingStartDate = new Date(`${booking.date}T${booking.startTime}`);
                     const bookingEndDate = new Date(`${booking.endDate}T${booking.endTime}`);
@@ -222,10 +222,11 @@
                     const newEndDate = new Date(`${endDate}T${endTime}`);
 
                     // Check if there is a conflict
-                    if (
-                        (newStartDate < bookingEndDate && newEndDate > bookingStartDate)
-                    ) {
-                        isConflict = true;
+                    if (newStartDate <= bookingEndDate && newEndDate >= bookingStartDate) {
+                        if ((newStartDate.getDate() === bookingStartDate.getDate() && newEndDate.getDate() === bookingEndDate.getDate()) &&
+                            (startTime < booking.endTime && endTime > booking.startTime)) {
+                            isConflict = true;
+                        }
                     }
                 });
 
