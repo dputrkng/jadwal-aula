@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Form Jadwal Pemakaian Ruangan</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <h2>Form Jadwal Pemakaian Ruangan</h2>
@@ -37,13 +39,26 @@
     <div id="schedule"></div>
 
     <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            authDomain: "PROJECT_ID.firebaseapp.com",
+            projectId: "PROJECT_ID",
+            storageBucket: "PROJECT_ID.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         const form = document.getElementById('bookingForm');
         const scheduleDiv = document.getElementById('schedule');
-        const bookings = [];
 
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-            
+
             const room = form.room.value;
             const date = form.date.value;
             const startTime = form.startTime.value;
@@ -51,33 +66,49 @@
             const purpose = form.purpose.value;
 
             // Cek bentrok jadwal
-            for (let booking of bookings) {
-                if (booking.room === room && booking.date === date) {
-                    if ((startTime >= booking.startTime && startTime < booking.endTime) ||
-                        (endTime > booking.startTime && endTime <= booking.endTime) ||
-                        (startTime <= booking.startTime && endTime >= booking.endTime)) {
+            db.collection('bookings')
+                .where('room', '==', room)
+                .where('date', '==', date)
+                .get()
+                .then(querySnapshot => {
+                    let isConflict = false;
+                    querySnapshot.forEach(doc => {
+                        const booking = doc.data();
+                        if ((startTime >= booking.startTime && startTime < booking.endTime) ||
+                            (endTime > booking.startTime && endTime <= booking.endTime) ||
+                            (startTime <= booking.startTime && endTime >= booking.endTime)) {
+                            isConflict = true;
+                        }
+                    });
+
+                    if (isConflict) {
                         alert('Ruangan sudah terpakai pada waktu tersebut!');
-                        return;
+                    } else {
+                        // Simpan pemesanan ke Firestore
+                        db.collection('bookings').add({
+                            room, date, startTime, endTime, purpose
+                        }).then(() => {
+                            form.reset();
+                            updateSchedule();
+                        });
                     }
-                }
-            }
-
-            // Simpan pemesanan
-            bookings.push({ room, date, startTime, endTime, purpose });
-            updateSchedule();
-
-            // Reset form
-            form.reset();
+                });
         });
 
         function updateSchedule() {
             scheduleDiv.innerHTML = '';
-            for (let booking of bookings) {
-                const bookingElement = document.createElement('div');
-                bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose}`;
-                scheduleDiv.appendChild(bookingElement);
-            }
+            db.collection('bookings').get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const booking = doc.data();
+                    const bookingElement = document.createElement('div');
+                    bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose}`;
+                    scheduleDiv.appendChild(bookingElement);
+                });
+            });
         }
+
+        // Initial call to display bookings
+        updateSchedule();
     </script>
 </body>
 </html>
