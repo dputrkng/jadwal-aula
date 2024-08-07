@@ -236,16 +236,12 @@
         });
 
         function updateSchedule() {
+            const today = new Date().toISOString().split('T')[0]; // Mendapatkan tanggal hari ini dalam format YYYY-MM-DD
             scheduleTableBody.innerHTML = '';
-            db.collection('bookings')
-                .orderBy('room')
-                .orderBy('date')
-                .orderBy('startTime')
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        const booking = doc.data();
-                        console.log('Booking data:', booking); // Debugging: Log data dari Firestore
+            db.collection('bookings').orderBy('room').orderBy('date').orderBy('startTime').get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const booking = doc.data();
+                    if (booking.date >= today) { // Hanya tampilkan data yang tanggalnya tidak lewat
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${booking.date}</td>
@@ -257,10 +253,9 @@
                             <td>${booking.pic}</td>
                         `;
                         scheduleTableBody.appendChild(row);
-                    });
-                }).catch(error => {
-                    console.error('Error getting documents: ', error);
+                    }
                 });
+            });
         }
 
         // Initial call to display bookings
