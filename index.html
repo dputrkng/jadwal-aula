@@ -65,25 +65,38 @@
             background-color: #45a049;
         }
 
-        h3 {
-            color: #333;
-        }
-
-        #schedule {
+        table {
+            width: 100%;
+            border-collapse: collapse;
             background: #fff;
-            padding: 20px;
+            padding: 10px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
         }
 
-        .booking {
-            background: #f9f9f9;
+        th, td {
+            border: 1px solid #ddd;
             padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        caption {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #333;
         }
     </style>
 </head>
@@ -136,10 +149,26 @@
     </form>
 
     <h3>Jadwal Pemakaian Ruangan</h3>
-    <div id="schedule"></div>
+    <table id="schedule">
+        <caption>Daftar Jadwal Pemakaian</caption>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Ruangan</th>
+                <th>Waktu Mulai</th>
+                <th>Waktu Selesai</th>
+                <th>Keperluan</th>
+                <th>Bidang</th>
+                <th>PIC Booking</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data jadwal akan muncul di sini -->
+        </tbody>
+    </table>
 
     <script>
-    // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
+        // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
             authDomain: "jadwal-aula.firebaseapp.com",
@@ -148,77 +177,84 @@
             messagingSenderId: "1075933905095",
             appId: "1:1075933905095:web:c2836158c7d750516ebee2"
         };
-        
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
-    const form = document.getElementById('bookingForm');
-    const scheduleDiv = document.getElementById('schedule');
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
+        const form = document.getElementById('bookingForm');
+        const scheduleTableBody = document.querySelector('#schedule tbody');
 
-        const room = form.room.value;
-        const date = form.date.value;
-        const startTime = form.startTime.value;
-        const endTime = form.endTime.value;
-        const purpose = form.purpose.value;
-        const bidang = form.bidang.value;
-        const pic = form.pic.value;
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        // Debugging: Log data form submission
-        console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
+            const room = form.room.value;
+            const date = form.date.value;
+            const startTime = form.startTime.value;
+            const endTime = form.endTime.value;
+            const purpose = form.purpose.value;
+            const bidang = form.bidang.value;
+            const pic = form.pic.value;
 
-        // Cek bentrok jadwal
-        db.collection('bookings')
-            .where('room', '==', room)
-            .where('date', '==', date)
-            .get()
-            .then(querySnapshot => {
-                let isConflict = false;
-                querySnapshot.forEach(doc => {
-                    const booking = doc.data();
-                    if ((startTime >= booking.startTime && startTime < booking.endTime) ||
-                        (endTime > booking.startTime && endTime <= booking.endTime) ||
-                        (startTime <= booking.startTime && endTime >= booking.endTime)) {
-                        isConflict = true;
+            // Debugging: Log data form submission
+            console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
+
+            // Cek bentrok jadwal
+            db.collection('bookings')
+                .where('room', '==', room)
+                .where('date', '==', date)
+                .get()
+                .then(querySnapshot => {
+                    let isConflict = false;
+                    querySnapshot.forEach(doc => {
+                        const booking = doc.data();
+                        if ((startTime >= booking.startTime && startTime < booking.endTime) ||
+                            (endTime > booking.startTime && endTime <= booking.endTime) ||
+                            (startTime <= booking.startTime && endTime >= booking.endTime)) {
+                            isConflict = true;
+                        }
+                    });
+
+                    if (isConflict) {
+                        alert('Ruangan sudah terpakai pada waktu tersebut!');
+                        location.reload(); // Tambahkan fungsi refresh
+                    } else {
+                        // Simpan pemesanan ke Firestore
+                        db.collection('bookings').add({
+                            room, date, startTime, endTime, purpose, bidang, pic
+                        }).then(() => {
+                            form.reset();
+                            updateSchedule();
+                        });
                     }
                 });
-
-                if (isConflict) {
-                    alert('Ruangan sudah terpakai pada waktu tersebut!');
-                    location.reload(); // Tambahkan fungsi refresh
-                } else {
-                    // Simpan pemesanan ke Firestore
-                    db.collection('bookings').add({
-                        room, date, startTime, endTime, purpose, bidang, pic
-                    }).then(() => {
-                        form.reset();
-                        updateSchedule();
-                    });
-                }
-            });
-    });
-
-    function updateSchedule() {
-        scheduleDiv.innerHTML = '';
-        db.collection('bookings').get().then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-                const booking = doc.data();
-                const bookingElement = document.createElement('div');
-                bookingElement.classList.add('booking');
-                bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose} - ${booking.bidang} - ${booking.pic}`;
-                scheduleDiv.appendChild(bookingElement);
-            });
         });
-    }
 
-    // Initial call to display bookings
-    updateSchedule();
+        function updateSchedule() {
+            scheduleTableBody.innerHTML = '';
+            db.collection('bookings').get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const booking = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${booking.date}</td>
+                        <td>${booking.room}</td>
+                        <td>${booking.startTime}</td>
+                        <td>${booking.endTime}</td>
+                        <td>${booking.purpose}</td>
+                        <td>${booking.bidang}</td>
+                        <td>${booking.pic}</td>
+                    `;
+                    scheduleTableBody.appendChild(row);
+                });
+            });
+        }
 
-    // Debugging: Verify Firebase initialization
-    console.log('Firebase initialized:', firebaseConfig);
-</script>
+        // Initial call to display bookings
+        updateSchedule();
+
+        // Debugging: Verify Firebase initialization
+        console.log('Firebase initialized:', firebaseConfig);
+    </script>
 </body>
 </html>
