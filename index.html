@@ -172,7 +172,7 @@
         </tbody>
     </table>
 
-    <script>
+   <script>
     // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
@@ -208,15 +208,18 @@
         // Cek bentrok jadwal
         db.collection('bookings')
             .where('room', '==', room)
-            .where('date', '==', date)
             .get()
             .then(querySnapshot => {
                 let isConflict = false;
+
                 querySnapshot.forEach(doc => {
                     const booking = doc.data();
-                    if ((startTime >= booking.startTime && startTime < booking.endTime) ||
-                        (endTime > booking.startTime && endTime <= booking.endTime) ||
-                        (startTime <= booking.startTime && endTime >= booking.endTime)) {
+
+                    // Check if there is a conflict
+                    if (
+                        (date <= booking.endDate && endDate >= booking.date) &&
+                        (startTime < booking.endTime && endTime > booking.startTime)
+                    ) {
                         isConflict = true;
                     }
                 });
