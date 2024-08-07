@@ -1,136 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Form Jadwal Pemakaian Ruangan</title>
-    <!-- Firebase App (the core Firebase SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <!-- Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <!-- Tambahkan CSS di sini -->
+    <title>Jadwal Pemakaian Ruangan</title>
     <style>
+        /* CSS untuk tampilan yang lebih menarik */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 20px;
         }
 
-        h2 {
-            color: #333;
+        h1 {
+            text-align: center;
         }
 
         form {
-            background: #fff;
+            max-width: 600px;
+            margin: 0 auto;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
+            margin-bottom: 10px;
         }
 
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        select {
+        input, select {
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
+            display: block;
             width: 100%;
-            background-color: #4CAF50;
-            color: white;
             padding: 10px;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
             font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #45a049;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
 
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
 
         th {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        tr:nth-child(even) {
             background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #ddd;
-        }
-
-        caption {
-            font-size: 1.2em;
-            margin: 10px 0;
-            color: #333;
         }
     </style>
 </head>
 <body>
-    <h2>Form Jadwal Pemakaian Ruangan</h2>
+    <h1>Form Jadwal Pemakaian Ruangan</h1>
     <form id="bookingForm">
         <label for="room">Ruangan:</label>
-        <select id="room" name="room" required>
-            <option value="Ruang A">Ruang A</option>
-            <option value="Ruang B">Ruang B</option>
-            <option value="Ruang C">Ruang C</option>
-        </select>
-        <br>
-
+        <input type="text" id="room" name="room" required>
+        
         <label for="date">Tanggal:</label>
         <input type="date" id="date" name="date" required>
-        <br>
-
+        
         <label for="startTime">Waktu Mulai:</label>
         <input type="time" id="startTime" name="startTime" required>
-        <br>
-
+        
         <label for="endTime">Waktu Selesai:</label>
         <input type="time" id="endTime" name="endTime" required>
-        <br>
-
-        <label for="endDate">Tanggal Selesai:</label>
-        <input type="date" id="endDate" name="endDate" required>
-        <br>
-
+        
         <label for="purpose">Keperluan:</label>
         <input type="text" id="purpose" name="purpose" required>
-        <br>
-
+        
         <label for="bidang">Bidang:</label>
         <select id="bidang" name="bidang" required>
             <option value="CK">CK</option>
@@ -143,37 +93,32 @@
             <option value="Program">Program</option>
             <option value="Sekret">Sekret</option>
         </select>
-        <br>
-
+        
         <label for="pic">PIC Booking:</label>
         <input type="text" id="pic" name="pic" required>
-        <br>
-
-        <button type="submit">Pesan Ruangan</button>
+        
+        <button type="submit">Simpan</button>
     </form>
 
-    <h3>Jadwal Pemakaian Ruangan</h3>
+    <h2>Jadwal Pemakaian Ruangan</h2>
     <table id="schedule">
-        <caption>Daftar Jadwal Pemakaian</caption>
         <thead>
             <tr>
                 <th>Tanggal</th>
                 <th>Waktu Mulai</th>
                 <th>Waktu Selesai</th>
-                <th>Tanggal Selesai</th>
                 <th>Ruangan</th>
                 <th>Keperluan</th>
                 <th>Bidang</th>
-                <th>PIC Booking</th>
+                <th>PIC</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Data jadwal akan muncul di sini -->
         </tbody>
     </table>
 
-<script>
-    // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
+    <script>
+        // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
             authDomain: "jadwal-aula.firebaseapp.com",
@@ -183,98 +128,95 @@
             appId: "1:1075933905095:web:c2836158c7d750516ebee2"
         };
 
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    const form = document.getElementById('bookingForm');
-    const scheduleTableBody = document.querySelector('#schedule tbody');
+        const form = document.getElementById('bookingForm');
+        const scheduleTableBody = document.querySelector('#schedule tbody');
 
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        const room = form.room.value;
-        const date = form.date.value;
-        const startTime = form.startTime.value;
-        const endTime = form.endTime.value;
-        const endDate = form.endDate.value;
-        const purpose = form.purpose.value;
-        const bidang = form.bidang.value;
-        const pic = form.pic.value;
+            const room = form.room.value;
+            const date = form.date.value;
+            const startTime = form.startTime.value;
+            const endTime = form.endTime.value;
+            const purpose = form.purpose.value;
+            const bidang = form.bidang.value;
+            const pic = form.pic.value;
 
-        // Debugging: Log data form submission
-        console.log('Form submitted:', { room, date, startTime, endTime, endDate, purpose, bidang, pic });
+            // Debugging: Log data form submission
+            console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
 
-        // Cek bentrok jadwal
-        db.collection('bookings')
-            .where('room', '==', room)
-            .get()
-            .then(querySnapshot => {
-                let isConflict = false;
+            // Cek bentrok jadwal
+            db.collection('bookings')
+                .where('room', '==', room)
+                .get()
+                .then(querySnapshot => {
+                    let isConflict = false;
 
-                querySnapshot.forEach(doc => {
-                    const booking = doc.data();
+                    querySnapshot.forEach(doc => {
+                        const booking = doc.data();
 
-                    // Konversi string ke objek Date
-                    const bookingStartDate = new Date(`${booking.date}T${booking.startTime}`);
-                    const bookingEndDate = new Date(`${booking.endDate}T${booking.endTime}`);
-                    const newStartDate = new Date(`${date}T${startTime}`);
-                    const newEndDate = new Date(`${endDate}T${endTime}`);
+                        // Konversi string ke objek Date
+                        const bookingStartDate = new Date(`${booking.date}T${booking.startTime}`);
+                        const bookingEndDate = new Date(`${booking.date}T${booking.endTime}`);
+                        const newStartDate = new Date(`${date}T${startTime}`);
+                        const newEndDate = new Date(`${date}T${endTime}`);
 
-                    // Check if there is a conflict
-                    if (newStartDate <= bookingEndDate && newEndDate >= bookingStartDate) {
-                        if ((newStartDate.getDate() === bookingStartDate.getDate() && newEndDate.getDate() === bookingEndDate.getDate()) &&
-                            (startTime < booking.endTime && endTime > booking.startTime)) {
+                        // Check if there is a conflict
+                        if (
+                            (newStartDate < bookingEndDate && newEndDate > bookingStartDate)
+                        ) {
                             isConflict = true;
                         }
+                    });
+
+                    if (isConflict) {
+                        alert('Ruangan sudah terpakai pada waktu tersebut!');
+                        location.reload(); // Tambahkan fungsi refresh
+                    } else {
+                        // Simpan pemesanan ke Firestore
+                        db.collection('bookings').add({
+                            room, date, startTime, endTime, purpose, bidang, pic
+                        }).then(() => {
+                            form.reset();
+                            updateSchedule();
+                            alert('Data berhasil di-entry!');
+                        }).catch(error => {
+                            console.error('Error adding document: ', error);
+                            alert('Terjadi kesalahan saat menyimpan data!');
+                        });
                     }
                 });
-
-                if (isConflict) {
-                    alert('Ruangan sudah terpakai pada waktu tersebut!');
-                    location.reload(); // Tambahkan fungsi refresh
-                } else {
-                    // Simpan pemesanan ke Firestore
-                    db.collection('bookings').add({
-                        room, date, startTime, endTime, endDate, purpose, bidang, pic
-                    }).then(() => {
-                        form.reset();
-                        updateSchedule();
-                        alert('Data berhasil di-entry!');
-                    }).catch(error => {
-                        console.error('Error adding document: ', error);
-                        alert('Terjadi kesalahan saat menyimpan data!');
-                    });
-                }
-            });
-    });
-
-    function updateSchedule() {
-        scheduleTableBody.innerHTML = '';
-        db.collection('bookings').get().then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-                const booking = doc.data();
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${booking.date}</td>
-                    <td>${booking.startTime}</td>
-                    <td>${booking.endTime}</td>
-                    <td>${booking.endDate}</td>
-                    <td>${booking.room}</td>
-                    <td>${booking.purpose}</td>
-                    <td>${booking.bidang}</td>
-                    <td>${booking.pic}</td>
-                `;
-                scheduleTableBody.appendChild(row);
-            });
         });
-    }
 
-    // Initial call to display bookings
-    updateSchedule();
+        function updateSchedule() {
+            scheduleTableBody.innerHTML = '';
+            db.collection('bookings').get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const booking = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${booking.date}</td>
+                        <td>${booking.startTime}</td>
+                        <td>${booking.endTime}</td>
+                        <td>${booking.room}</td>
+                        <td>${booking.purpose}</td>
+                        <td>${booking.bidang}</td>
+                        <td>${booking.pic}</td>
+                    `;
+                    scheduleTableBody.appendChild(row);
+                });
+            });
+        }
 
-    // Debugging: Verify Firebase initialization
-    console.log('Firebase initialized:', firebaseConfig);
-</script>
+        // Initial call to display bookings
+        updateSchedule();
+
+        // Debugging: Verify Firebase initialization
+        console.log('Firebase initialized:', firebaseConfig);
+    </script>
 </body>
 </html>
