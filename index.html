@@ -105,9 +105,9 @@
     <form id="bookingForm">
         <label for="room">Ruangan:</label>
         <select id="room" name="room" required>
-            <option value="Ruang A">Ruang A</option>
-            <option value="Ruang B">Ruang B</option>
-            <option value="Ruang C">Ruang C</option>
+            <option value="Ruang A">Aula Atas</option>
+            <option value="Ruang B">Ruang Rapat Bawah</option>
+            <option value="Ruang C">Aula Luar</option>
         </select>
         <br>
 
@@ -129,15 +129,16 @@
 
         <label for="bidang">Bidang:</label>
         <select id="bidang" name="bidang" required>
-            <option value="CK">CK</option>
-            <option value="BM">BM</option>
-            <option value="TR">TR</option>
-            <option value="Jakon">Jakon</option>
-            <option value="SDA">SDA</option>
-            <option value="Umum">Umum</option>
+            <option value="CK">Cipta Karya</option>
+            <option value="BM">Bina Marga</option>
+            <option value="TR">Tata Ruang</option>
+            <option value="Jakon">Bina konstruksi</option>
+            <option value="SDA">Sumber Daya Alam</option>
+            <option value="Sekret">Sekret</option>
+            <option value="Umum">Umum & Kepegawaian</option>
             <option value="Keuangan">Keuangan</option>
             <option value="Program">Program</option>
-            <option value="Sekret">Sekret</option>
+            <option value="Sekret">UPTD</option>
         </select>
         <br>
 
@@ -150,7 +151,7 @@
 
     <h3>Jadwal Pemakaian Ruangan</h3>
     <table id="schedule">
-        <caption>Daftar Jadwal Pemakaian</caption>
+        <caption>Daftar Jadwal Pemakaian Ruangan</caption>
         <thead>
             <tr>
                 <th>Tanggal</th>
@@ -216,7 +217,7 @@
                     });
 
                     if (isConflict) {
-                        alert('Ruangan sudah terpakai pada waktu tersebut!');
+                        alert('Ruangan sudah terbooking pada waktu yang anda pilih, silahkan memilih jadwal lain!');
                         location.reload(); // Tambahkan fungsi refresh
                     } else {
                         // Simpan pemesanan ke Firestore
@@ -225,7 +226,7 @@
                         }).then(() => {
                             form.reset();
                             updateSchedule();
-                            alert('Data berhasil di-entry!');
+                            alert('Data berhasil di Simpan!');
                         }).catch(error => {
                             console.error('Error adding document: ', error);
                             alert('Terjadi kesalahan saat menyimpan data!');
@@ -236,22 +237,27 @@
 
         function updateSchedule() {
             scheduleTableBody.innerHTML = '';
-            db.collection('bookings').get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    const booking = doc.data();
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${booking.date}</td>
-                        <td>${booking.room}</td>
-                        <td>${booking.startTime}</td>
-                        <td>${booking.endTime}</td>
-                        <td>${booking.purpose}</td>
-                        <td>${booking.bidang}</td>
-                        <td>${booking.pic}</td>
-                    `;
-                    scheduleTableBody.appendChild(row);
+            db.collection('bookings')
+                .orderBy('room')
+                .orderBy('date')
+                .orderBy('startTime')
+                .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const booking = doc.data();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${booking.date}</td>
+                            <td>${booking.room}</td>
+                            <td>${booking.startTime}</td>
+                            <td>${booking.endTime}</td>
+                            <td>${booking.purpose}</td>
+                            <td>${booking.bidang}</td>
+                            <td>${booking.pic}</td>
+                        `;
+                        scheduleTableBody.appendChild(row);
+                    });
                 });
-            });
         }
 
         // Initial call to display bookings
