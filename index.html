@@ -139,85 +139,86 @@
     <div id="schedule"></div>
 
     <script>
-        // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
-            authDomain: "jadwal-aula.firebaseapp.com",
-            projectId: "jadwal-aula",
-            storageBucket: "jadwal-aula.appspot.com",
-            messagingSenderId: "1075933905095",
-            appId: "1:1075933905095:web:c2836158c7d750516ebee2"
-        };
+    // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
 
-        // Inisialisasi Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        const form = document.getElementById('bookingForm');
-        const scheduleDiv = document.getElementById('schedule');
+    const form = document.getElementById('bookingForm');
+    const scheduleDiv = document.getElementById('schedule');
 
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            const room = form.room.value;
-            const date = form.date.value;
-            const startTime = form.startTime.value;
-            const endTime = form.endTime.value;
-            const purpose = form.purpose.value;
-            const bidang = form.bidang.value;
-            const pic = form.pic.value;
+        const room = form.room.value;
+        const date = form.date.value;
+        const startTime = form.startTime.value;
+        const endTime = form.endTime.value;
+        const purpose = form.purpose.value;
+        const bidang = form.bidang.value;
+        const pic = form.pic.value;
 
-            // Debugging: Log data form submission
-            console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
+        // Debugging: Log data form submission
+        console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
 
-            // Cek bentrok jadwal
-            db.collection('bookings')
-                .where('room', '==', room)
-                .where('date', '==', date)
-                .get()
-                .then(querySnapshot => {
-                    let isConflict = false;
-                    querySnapshot.forEach(doc => {
-                        const booking = doc.data();
-                        if ((startTime >= booking.startTime && startTime < booking.endTime) ||
-                            (endTime > booking.startTime && endTime <= booking.endTime) ||
-                            (startTime <= booking.startTime && endTime >= booking.endTime)) {
-                            isConflict = true;
-                        }
-                    });
-
-                    if (isConflict) {
-                        alert('Ruangan sudah terpakai pada waktu tersebut!');
-                    } else {
-                        // Simpan pemesanan ke Firestore
-                        db.collection('bookings').add({
-                            room, date, startTime, endTime, purpose, bidang, pic
-                        }).then(() => {
-                            form.reset();
-                            updateSchedule();
-                        });
-                    }
-                });
-        });
-
-        function updateSchedule() {
-            scheduleDiv.innerHTML = '';
-            db.collection('bookings').get().then(querySnapshot => {
+        // Cek bentrok jadwal
+        db.collection('bookings')
+            .where('room', '==', room)
+            .where('date', '==', date)
+            .get()
+            .then(querySnapshot => {
+                let isConflict = false;
                 querySnapshot.forEach(doc => {
                     const booking = doc.data();
-                    const bookingElement = document.createElement('div');
-                    bookingElement.classList.add('booking');
-                    bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose} - ${booking.bidang} - ${booking.pic}`;
-                    scheduleDiv.appendChild(bookingElement);
+                    if ((startTime >= booking.startTime && startTime < booking.endTime) ||
+                        (endTime > booking.startTime && endTime <= booking.endTime) ||
+                        (startTime <= booking.startTime && endTime >= booking.endTime)) {
+                        isConflict = true;
+                    }
                 });
+
+                if (isConflict) {
+                    alert('Ruangan sudah terpakai pada waktu tersebut!');
+                    location.reload(); // Tambahkan fungsi refresh
+                } else {
+                    // Simpan pemesanan ke Firestore
+                    db.collection('bookings').add({
+                        room, date, startTime, endTime, purpose, bidang, pic
+                    }).then(() => {
+                        form.reset();
+                        updateSchedule();
+                    });
+                }
             });
-        }
+    });
 
-        // Initial call to display bookings
-        updateSchedule();
+    function updateSchedule() {
+        scheduleDiv.innerHTML = '';
+        db.collection('bookings').get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                const booking = doc.data();
+                const bookingElement = document.createElement('div');
+                bookingElement.classList.add('booking');
+                bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose} - ${booking.bidang} - ${booking.pic}`;
+                scheduleDiv.appendChild(bookingElement);
+            });
+        });
+    }
 
-        // Debugging: Verify Firebase initialization
-        console.log('Firebase initialized:', firebaseConfig);
-    </script>
+    // Initial call to display bookings
+    updateSchedule();
+
+    // Debugging: Verify Firebase initialization
+    console.log('Firebase initialized:', firebaseConfig);
+</script>
 </body>
 </html>
