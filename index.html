@@ -6,6 +6,86 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <!-- Tambahkan CSS di sini -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h3 {
+            color: #333;
+        }
+
+        #schedule {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .booking {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+    </style>
 </head>
 <body>
     <h2>Form Jadwal Pemakaian Ruangan</h2>
@@ -16,23 +96,41 @@
             <option value="Ruang B">Ruang B</option>
             <option value="Ruang C">Ruang C</option>
         </select>
-        <br><br>
+        <br>
 
         <label for="date">Tanggal:</label>
         <input type="date" id="date" name="date" required>
-        <br><br>
+        <br>
 
         <label for="startTime">Waktu Mulai:</label>
         <input type="time" id="startTime" name="startTime" required>
-        <br><br>
+        <br>
 
         <label for="endTime">Waktu Selesai:</label>
         <input type="time" id="endTime" name="endTime" required>
-        <br><br>
+        <br>
 
         <label for="purpose">Keperluan:</label>
         <input type="text" id="purpose" name="purpose" required>
-        <br><br>
+        <br>
+
+        <label for="bidang">Bidang:</label>
+        <select id="bidang" name="bidang" required>
+            <option value="CK">CK</option>
+            <option value="BM">BM</option>
+            <option value="TR">TR</option>
+            <option value="Jakon">Jakon</option>
+            <option value="SDA">SDA</option>
+            <option value="Umum">Umum</option>
+            <option value="Keuangan">Keuangan</option>
+            <option value="Program">Program</option>
+            <option value="Sekret">Sekret</option>
+        </select>
+        <br>
+
+        <label for="pic">PIC Booking:</label>
+        <input type="text" id="pic" name="pic" required>
+        <br>
 
         <button type="submit">Pesan Ruangan</button>
     </form>
@@ -66,9 +164,11 @@
             const startTime = form.startTime.value;
             const endTime = form.endTime.value;
             const purpose = form.purpose.value;
+            const bidang = form.bidang.value;
+            const pic = form.pic.value;
 
             // Debugging: Log data form submission
-            console.log('Form submitted:', { room, date, startTime, endTime, purpose });
+            console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
 
             // Cek bentrok jadwal
             db.collection('bookings')
@@ -91,7 +191,7 @@
                     } else {
                         // Simpan pemesanan ke Firestore
                         db.collection('bookings').add({
-                            room, date, startTime, endTime, purpose
+                            room, date, startTime, endTime, purpose, bidang, pic
                         }).then(() => {
                             form.reset();
                             updateSchedule();
@@ -106,7 +206,8 @@
                 querySnapshot.forEach(doc => {
                     const booking = doc.data();
                     const bookingElement = document.createElement('div');
-                    bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose}`;
+                    bookingElement.classList.add('booking');
+                    bookingElement.textContent = `${booking.date} - ${booking.room} - ${booking.startTime} hingga ${booking.endTime} - ${booking.purpose} - ${booking.bidang} - ${booking.pic}`;
                     scheduleDiv.appendChild(bookingElement);
                 });
             });
