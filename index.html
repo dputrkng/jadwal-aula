@@ -172,7 +172,7 @@
         </tbody>
     </table>
 
-   <script>
+<script>
     // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
@@ -214,11 +214,16 @@
 
                 querySnapshot.forEach(doc => {
                     const booking = doc.data();
+                    
+                    // Konversi string ke objek Date
+                    const bookingStartDate = new Date(`${booking.date}T${booking.startTime}`);
+                    const bookingEndDate = new Date(`${booking.endDate}T${booking.endTime}`);
+                    const newStartDate = new Date(`${date}T${startTime}`);
+                    const newEndDate = new Date(`${endDate}T${endTime}`);
 
                     // Check if there is a conflict
                     if (
-                        (date <= booking.endDate && endDate >= booking.date) &&
-                        (startTime < booking.endTime && endTime > booking.startTime)
+                        (newStartDate < bookingEndDate && newEndDate > bookingStartDate)
                     ) {
                         isConflict = true;
                     }
