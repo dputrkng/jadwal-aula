@@ -151,13 +151,13 @@
                 size: 215mm 330mm; /* Ukuran kertas F4 potrait */
                 margin: 20mm; /* Margin untuk kertas */
             }
-
+        
             body {
                 margin: 0;
                 padding: 0;
                 font-family: Arial, sans-serif;
             }
-
+        
             .print-only {
                 width: 100%;
                 margin: 0;
@@ -166,14 +166,14 @@
                 border: 1px solid #ddd;
                 box-sizing: border-box;
             }
-
+        
             .print-only table {
                 width: 100%;
                 border-collapse: collapse;
                 margin: 0;
                 padding: 0;
             }
-
+        
             .print-only th, .print-only td {
                 border: 1px solid #ddd;
                 padding: 10px;
@@ -181,21 +181,21 @@
                 font-size: 14px;
                 box-sizing: border-box;
             }
-
+        
             .print-only th {
                 background-color: #4CAF50;
-                color: rgb(178, 201, 47);
+                color: white;
                 font-weight: bold;
             }
-
+        
             .print-only tr:nth-child(even) {
                 background-color: #f2f2f2;
             }
-
+        
             .print-only tr:hover {
                 background-color: #ddd;
             }
-
+        
             .print-header, .print-footer {
                 width: 100%;
                 text-align: center;
@@ -203,29 +203,34 @@
                 left: 0;
                 right: 0;
             }
-
+        
             .print-header {
                 top: 0;
                 border-bottom: 1px solid #ddd;
                 padding-bottom: 10px;
                 margin-bottom: 20px;
             }
-
+        
             .print-footer {
                 bottom: 0;
                 border-top: 1px solid #ddd;
                 padding-top: 10px;
                 margin-top: 20px;
             }
-
+        
             .print-header img {
                 height: 50px; /* Sesuaikan ukuran logo */
                 vertical-align: middle;
             }
-
+        
             .print-header h1 {
                 margin: 0;
                 font-size: 20px;
+            }
+        
+            .print-footer p {
+                margin: 0;
+                font-size: 12px;
             }
         }
 
@@ -450,7 +455,7 @@
         function printTable() {
             const originalContents = document.body.innerHTML;
             const printContents = document.getElementById('schedule').outerHTML;
-
+        
             document.body.innerHTML = `
                 <html>
                 <head>
@@ -461,13 +466,13 @@
                                 size: 215mm 330mm; /* Ukuran kertas F4 potrait */
                                 margin: 20mm; /* Margin untuk kertas */
                             }
-
+        
                             body {
                                 margin: 0;
                                 padding: 0;
                                 font-family: Arial, sans-serif;
                             }
-
+        
                             .print-only {
                                 width: 100%;
                                 margin: 0;
@@ -476,14 +481,14 @@
                                 border: 1px solid #ddd;
                                 box-sizing: border-box;
                             }
-
+        
                             .print-only table {
                                 width: 100%;
                                 border-collapse: collapse;
                                 margin: 0;
                                 padding: 0;
                             }
-
+        
                             .print-only th, .print-only td {
                                 border: 1px solid #ddd;
                                 padding: 10px;
@@ -491,21 +496,21 @@
                                 font-size: 14px;
                                 box-sizing: border-box;
                             }
-
+        
                             .print-only th {
                                 background-color: #4CAF50;
                                 color: white;
                                 font-weight: bold;
                             }
-
+        
                             .print-only tr:nth-child(even) {
                                 background-color: #f2f2f2;
                             }
-
+        
                             .print-only tr:hover {
                                 background-color: #ddd;
                             }
-
+        
                             .print-header, .print-footer {
                                 width: 100%;
                                 text-align: center;
@@ -513,29 +518,34 @@
                                 left: 0;
                                 right: 0;
                             }
-
+        
                             .print-header {
                                 top: 0;
                                 border-bottom: 1px solid #ddd;
                                 padding-bottom: 10px;
                                 margin-bottom: 20px;
                             }
-
+        
                             .print-footer {
                                 bottom: 0;
                                 border-top: 1px solid #ddd;
                                 padding-top: 10px;
                                 margin-top: 20px;
                             }
-
+        
                             .print-header img {
                                 height: 50px; /* Sesuaikan ukuran logo */
                                 vertical-align: middle;
                             }
-
+        
                             .print-header h1 {
                                 margin: 0;
                                 font-size: 20px;
+                            }
+        
+                            .print-footer p {
+                                margin: 0;
+                                font-size: 12px;
                             }
                         }
                     </style>
@@ -554,9 +564,9 @@
                 </body>
                 </html>
             `;
-
+        
             window.print();
-
+        
             document.body.innerHTML = originalContents;
         }
 
