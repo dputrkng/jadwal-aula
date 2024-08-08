@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Form Jadwal Pemakaian Ruangan</title>
+    <title>Daftar Jadwal Pemakaian Ruangan</title>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Tambahkan CSS di sini -->
     <style>
         body {
@@ -112,6 +113,120 @@
 
         button:hover {
             background-color: #45a049;
+        }
+
+        .print-button {
+            margin-top: 20px;
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Tengah-tengah konten tombol */
+            transition: background-color 0.3s ease;
+            width: auto; /* Lebar otomatis sesuai dengan konten */
+            max-width: 200px; /* Sesuaikan jika perlu */
+        }
+
+        .print-button i {
+            margin-right: 8px;
+        }
+
+        .print-button:hover {
+            background-color: #2a6694;
+        }
+
+        .centered-button-container {
+            display: flex;
+            justify-content: center; /* Tengah-tengah tombol di halaman */
+            margin-top: 20px;
+        }
+
+        @media print {
+            @page {
+                size: 215mm 330mm; /* Ukuran kertas F4 potrait */
+                margin: 20mm; /* Margin untuk kertas */
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            .print-only {
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                background: #f9f9f9;
+                border: 1px solid #ddd;
+                box-sizing: border-box;
+            }
+
+            .print-only table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 0;
+                padding: 0;
+            }
+
+            .print-only th, .print-only td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: left;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+
+            .print-only th {
+                background-color: #4CAF50;
+                color: rgb(178, 201, 47);
+                font-weight: bold;
+            }
+
+            .print-only tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            .print-only tr:hover {
+                background-color: #ddd;
+            }
+
+            .print-header, .print-footer {
+                width: 100%;
+                text-align: center;
+                position: fixed;
+                left: 0;
+                right: 0;
+            }
+
+            .print-header {
+                top: 0;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+
+            .print-footer {
+                bottom: 0;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+                margin-top: 20px;
+            }
+
+            .print-header img {
+                height: 50px; /* Sesuaikan ukuran logo */
+                vertical-align: middle;
+            }
+
+            .print-header h1 {
+                margin: 0;
+                font-size: 20px;
+            }
         }
 
         table {
@@ -234,6 +349,10 @@
         </tbody>
     </table>
 
+    <button class="print-button" onclick="printTable()">
+        <i class="fas fa-print"></i> Cetak Jadwal
+    </button>
+
     <script>
         // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
         const firebaseConfig = {
@@ -302,30 +421,143 @@
         });
 
         function updateSchedule() {
-            scheduleTableBody.innerHTML = '';
-            const today = new Date().toISOString().split('T')[0];
-            db.collection('bookings')
-                .orderBy('room')
-                .orderBy('date')
-                .orderBy('startTime')
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        const booking = doc.data();
-                        if (booking.date >= today) {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${booking.room}</td>
-                                <td>${booking.date}</td>
-                                <td>${booking.startTime} - ${booking.endTime}</td>
-                                <td>${booking.purpose}</td>
-                                <td>${booking.bidang}</td>
-                                <td>${booking.pic}</td>
-                            `;
-                            scheduleTableBody.appendChild(row);
+                    scheduleTableBody.innerHTML = '';
+                    const today = new Date().toISOString().split('T')[0];
+                    db.collection('bookings')
+                        .orderBy('room')
+                        .orderBy('date')
+                        .orderBy('startTime')
+                        .get()
+                        .then(querySnapshot => {
+                            querySnapshot.forEach(doc => {
+                                const booking = doc.data();
+                                if (booking.date >= today) {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td>${booking.room}</td>
+                                        <td>${booking.date}</td>
+                                        <td>${booking.startTime} - ${booking.endTime}</td>
+                                        <td>${booking.purpose}</td>
+                                        <td>${booking.bidang}</td>
+                                        <td>${booking.pic}</td>
+                                    `;
+                                    scheduleTableBody.appendChild(row);
+                                }
+                            });
+                        });
+                }
+
+        function printTable() {
+            const originalContents = document.body.innerHTML;
+            const printContents = document.getElementById('schedule').outerHTML;
+
+            document.body.innerHTML = `
+                <html>
+                <head>
+                    <title>Print</title>
+                    <style>
+                        @media print {
+                            @page {
+                                size: 215mm 330mm; /* Ukuran kertas F4 potrait */
+                                margin: 20mm; /* Margin untuk kertas */
+                            }
+
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                font-family: Arial, sans-serif;
+                            }
+
+                            .print-only {
+                                width: 100%;
+                                margin: 0;
+                                padding: 20px;
+                                background: #f9f9f9;
+                                border: 1px solid #ddd;
+                                box-sizing: border-box;
+                            }
+
+                            .print-only table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin: 0;
+                                padding: 0;
+                            }
+
+                            .print-only th, .print-only td {
+                                border: 1px solid #ddd;
+                                padding: 10px;
+                                text-align: left;
+                                font-size: 14px;
+                                box-sizing: border-box;
+                            }
+
+                            .print-only th {
+                                background-color: #4CAF50;
+                                color: white;
+                                font-weight: bold;
+                            }
+
+                            .print-only tr:nth-child(even) {
+                                background-color: #f2f2f2;
+                            }
+
+                            .print-only tr:hover {
+                                background-color: #ddd;
+                            }
+
+                            .print-header, .print-footer {
+                                width: 100%;
+                                text-align: center;
+                                position: fixed;
+                                left: 0;
+                                right: 0;
+                            }
+
+                            .print-header {
+                                top: 0;
+                                border-bottom: 1px solid #ddd;
+                                padding-bottom: 10px;
+                                margin-bottom: 20px;
+                            }
+
+                            .print-footer {
+                                bottom: 0;
+                                border-top: 1px solid #ddd;
+                                padding-top: 10px;
+                                margin-top: 20px;
+                            }
+
+                            .print-header img {
+                                height: 50px; /* Sesuaikan ukuran logo */
+                                vertical-align: middle;
+                            }
+
+                            .print-header h1 {
+                                margin: 0;
+                                font-size: 20px;
+                            }
                         }
-                    });
-                });
+                    </style>
+                </head>
+                <body>
+                    <div class="print-header">
+                        <img src="https://github.com/dputrkng/jadwal-aula/blob/main/dputrkuningan.png" alt="Logo PU">
+                        <h1>Daftar Jadwal Pemakaian Ruangan</h1>
+                    </div>
+                    <div class="print-only">
+                        ${printContents}
+                    </div>
+                    <div class="print-footer">
+                        <p>Page <span class="pageNumber"></span> of <span class="totalPages"></span></p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
         }
 
         // Initial call to display bookings
