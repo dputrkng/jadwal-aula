@@ -99,24 +99,24 @@
         }
 
         button {
-            width: 100%;
-            background-color: #2b692ed4;
+            width: auto;
+            background-color: #f09e07d4;
             color: white;
-            padding: 14px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 15px;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #3ec715;
+            color: #000802;
+            font-weight: bold;
         }
 
         .print-button {
-            margin-top: 20px;
             background-color: #2196F3;
             color: white;
             padding: 10px 20px;
@@ -128,8 +128,6 @@
             align-items: center;
             justify-content: center; /* Tengah-tengah konten tombol */
             transition: background-color 0.3s ease;
-            width: auto; /* Lebar otomatis sesuai dengan konten */
-            max-width: 200px; /* Sesuaikan jika perlu */
         }
 
         .print-button i {
@@ -137,13 +135,16 @@
         }
 
         .print-button:hover {
-            background-color: #2a6694;
+            background-color: #176199;
+            color: #e2ece5;
+            font-weight: bold;
         }
 
         .centered-button-container {
             display: flex;
-            justify-content: center; /* Tengah-tengah tombol di halaman */
-            margin-top: 20px;
+            justify-content: center; /* Center the button container */
+            width: 100%;
+            margin-top: 10px; /* Space above the button */
         }
 
         @media print {
@@ -335,7 +336,7 @@
             <input type="text" id="purpose" name="purpose" required>
         </div>
 
-        <button type="submit">Pesan Ruangan</button>
+        <button type="submit">Pesan</button>
     </form>
 
     <h3>DAFTAR JADWAL PEMAKAIAN RUANGAN</h3>
