@@ -20,6 +20,13 @@
 
         h2 {
             color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        h2 img {
+            margin-right: 10px;
+            height: 50px; /* Sesuaikan ukuran ikon */
         }
 
         form {
@@ -110,30 +117,33 @@
     </style>
 </head>
 <body>
-    <h2>Form - Jadwal Pemakaian Ruangan</h2>
+    <h2>
+        <img src="lambang PU.png" alt="Logo PU">
+        Form - Jadwal Pemakaian Ruangan
+    </h2>
     <form id="bookingForm">
         <div class="form-group">
             <label for="room">Ruangan:</label>
             <select id="room" name="room" required>
-                <option value="Ruang A">Aula Atas</option>
-                <option value="Ruang B">Ruang Rapat Bawah</option>
-                <option value="Ruang C">Aula Luar</option>
+                <option value="Aula Atas">Aula Atas</option>
+                <option value="Ruang Rapat Bawah">Ruang Rapat Bawah</option>
+                <option value="Aula Luar">Aula Luar</option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="bidang">Bidang:</label>
             <select id="bidang" name="bidang" required>
-                <option value="CK">Cipta Karya</option>
-                <option value="BM">Bina Marga</option>
-                <option value="TR">Tata Ruang</option>
-                <option value="Jakon">Bina konstruksi</option>
-                <option value="SDA">Sumber Daya Alam</option>
+                <option value="Cipta Karya">Cipta Karya</option>
+                <option value="Bina Marga">Bina Marga</option>
+                <option value="Tata Ruang">Tata Ruang</option>
+                <option value="Bina konstruksi">Bina Konstruksi</option>
+                <option value="Sumber Daya Alam">Sumber Daya Alam</option>
                 <option value="Sekret">Sekret</option>
-                <option value="Umum">Umum & Kepegawaian</option>
+                <option value="Umum & Kepegawaian">Umum & Kepegawaian</option>
                 <option value="Keuangan">Keuangan</option>
                 <option value="Program">Program</option>
-                <option value="Sekret">UPTD</option>
+                <option value="UPTD">UPTD</option>
             </select>
         </div>
 
@@ -171,8 +181,7 @@
             <tr>
                 <th>Ruangan</th>
                 <th>Tanggal</th>
-                <th>Waktu Mulai</th>
-                <th>Waktu Selesai</th>
+                <th>Waktu</th>
                 <th>Keperluan</th>
                 <th>Bidang</th>
                 <th>PIC Booking</th>
@@ -266,8 +275,7 @@
                             row.innerHTML = `
                                 <td>${booking.room}</td>
                                 <td>${booking.date}</td>
-                                <td>${booking.startTime}</td>
-                                <td>${booking.endTime}</td>
+                                <td>${booking.startTime} - ${booking.endTime}</td>
                                 <td>${booking.purpose}</td>
                                 <td>${booking.bidang}</td>
                                 <td>${booking.pic}</td>
