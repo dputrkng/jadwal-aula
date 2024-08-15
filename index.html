@@ -283,9 +283,32 @@
             color: #0e0101;
             margin-top: 12px;
         }
+
+        .admin-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .admin-button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
+
+    <!-- Tambahkan tombol akses admin -->
+    <button class="admin-button" onclick="window.location.href='admin-login.html'">Admin Login</button>
+
     <h2>
         <img src="lambang PU.png" alt="Logo PU1">
         <img src="dputrkng.png" alt="Logo PU">
@@ -357,6 +380,7 @@
                 <th>Keperluan</th>
                 <th>Bidang</th>
                 <th>PIC Booking</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -369,7 +393,7 @@
     </button>
 
     <script>
-        // Konfigurasi Firebase (ganti dengan konfigurasi Anda sendiri)
+        // Konfigurasi Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
             authDomain: "jadwal-aula.firebaseapp.com",
@@ -397,10 +421,6 @@
             const bidang = form.bidang.value;
             const pic = form.pic.value;
 
-            // Debugging: Log data form submission
-            console.log('Form submitted:', { room, date, startTime, endTime, purpose, bidang, pic });
-
-            // Cek bentrok jadwal
             db.collection('bookings')
                 .where('room', '==', room)
                 .where('date', '==', date)
@@ -418,15 +438,21 @@
 
                     if (isConflict) {
                         alert('Ruangan sudah terbooking pada waktu yang anda pilih, silahkan memilih jadwal lain!');
-                        location.reload(); // Tambahkan fungsi refresh
+                        location.reload();
                     } else {
-                        // Simpan pemesanan ke Firestore
                         db.collection('bookings').add({
-                            room, date, startTime, endTime, purpose, bidang, pic
+                            room, 
+                            date, 
+                            startTime, 
+                            endTime, 
+                            purpose, 
+                            bidang, 
+                            pic,
+                            status: 'Verifikasi' // Status default
                         }).then(() => {
                             form.reset();
                             updateSchedule();
-                            alert('Data berhasil di Simpan!');
+                            alert('Data berhasil disimpan!');
                         }).catch(error => {
                             console.error('Error adding document: ', error);
                             alert('Terjadi kesalahan saat menyimpan data!');
@@ -436,31 +462,37 @@
         });
 
         function updateSchedule() {
-                    scheduleTableBody.innerHTML = '';
-                    const today = new Date().toISOString().split('T')[0];
-                    db.collection('bookings')
-                        .orderBy('room')
-                        .orderBy('date')
-                        .orderBy('startTime')
-                        .get()
-                        .then(querySnapshot => {
-                            querySnapshot.forEach(doc => {
-                                const booking = doc.data();
-                                if (booking.date >= today) {
-                                    const row = document.createElement('tr');
-                                    row.innerHTML = `
-                                        <td>${booking.room}</td>
-                                        <td>${booking.date}</td>
-                                        <td>${booking.startTime} - ${booking.endTime}</td>
-                                        <td>${booking.purpose}</td>
-                                        <td>${booking.bidang}</td>
-                                        <td>${booking.pic}</td>
-                                    `;
-                                    scheduleTableBody.appendChild(row);
-                                }
-                            });
-                        });
-                }
+            scheduleTableBody.innerHTML = '';
+            const today = new Date().toISOString().split('T')[0];
+            db.collection('bookings')
+                .orderBy('room')
+                .orderBy('date')
+                .orderBy('startTime')
+                .get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const booking = doc.data();
+                        if (booking.date >= today) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${booking.room}</td>
+                                <td>${booking.date}</td>
+                                <td>${booking.startTime} - ${booking.endTime}</td>
+                                <td>${booking.purpose}</td>
+                                <td>${booking.bidang}</td>
+                                <td>${booking.pic}</td>
+                                <td>${booking.status}</td> <!-- Tampilkan status -->
+                            `;
+                            scheduleTableBody.appendChild(row);
+                        }
+                    });
+                });
+        }
+
+        function isAdmin() {
+            // Ganti dengan logika pengecekan admin yang sesuai
+            return true; // Misalnya, return true jika user adalah admin
+        }
 
         function printTable() {
             const originalContents = document.body.innerHTML;
@@ -582,8 +614,6 @@
         // Initial call to display bookings
         updateSchedule();
 
-        // Debugging: Verify Firebase initialization
-        console.log('Firebase initialized:', firebaseConfig);
     </script>
 </body>
 </html>
