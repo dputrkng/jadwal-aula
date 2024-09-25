@@ -260,9 +260,8 @@
             padding: 15px;
             text-align: left; /* Teks di isi tabel rata kiri */
             border-bottom: 1px solid #ddd;
-            white-space: nowrap; /* Mencegah teks dari pembungkusan ke baris berikutnya */
-            overflow: hidden; /* Menyembunyikan teks yang meluber */
-            text-overflow: ellipsis; /* Menambahkan "..." pada teks yang terlalu panjang */
+            word-wrap: break-word; /* Break long words if necessary */
+            overflow-wrap: break-word; /* Alternative to word-wrap for better browser support */
         }
 
         th {
