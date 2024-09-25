@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Jadwal Pemakaian Ruangan</title>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -244,48 +242,33 @@
         }
 
         table {
-            width: 1000px;
-            max-width: 1000px;
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            table-layout: fixed; /* This ensures that the column widths are respected */
         }
 
-        th, td {
+        th {
             padding: 15px;
-            text-align: left;
+            text-align: center; /* Memusatkan teks di header */
+            background-color: #447446;
+            color: white;
+            font-weight: bold;
             border-bottom: 1px solid #ddd;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            word-wrap: break-word;
+        }
+
+        td {
+            padding: 15px;
+            text-align: left; /* Teks di isi tabel rata kiri */
+            border-bottom: 1px solid #ddd;
+            white-space: nowrap; /* Mencegah teks dari pembungkusan ke baris berikutnya */
+            overflow: hidden; /* Menyembunyikan teks yang meluber */
+            text-overflow: ellipsis; /* Menambahkan "..." pada teks yang terlalu panjang */
         }
 
         th {
             background-color: #467448;
             color: white;
             font-weight: bold;
-            text-align: center;
-        }
-
-        td {
-            vertical-align: top; /* Align content to the top of the cell */
-        }
-
-        /* Column width settings */
-        th:nth-child(1), td:nth-child(1) { width: 23%; } /* Ruangan */
-        th:nth-child(2), td:nth-child(2) { width: 20%; } /* Tanggal */
-        th:nth-child(3), td:nth-child(3) { width: 23%; } /* Waktu */
-        th:nth-child(4), td:nth-child(4) { width: 55%; } /* Keperluan */
-        th:nth-child(5), td:nth-child(5) { width: 20%; } /* Bidang */
-        th:nth-child(6), td:nth-child(6) { width: 20%; } /* PIC Booking */
-        th:nth-child(7), td:nth-child(7) { width: 16%; } /* Status */
-
-        /* Specific style for the "Keperluan" column to allow text wrapping */
-        th:nth-child(4), td:nth-child(4) {
-            white-space: normal;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
         }
 
         tr:last-child td {
@@ -350,9 +333,9 @@
                 <option value="Bina Marga">Bina Marga</option>
                 <option value="Tata Ruang">Tata Ruang</option>
                 <option value="Bina konstruksi">Bina Konstruksi</option>
-                <option value="SDA">SDA</option>
+                <option value="Sumber Daya Alam">Sumber Daya Alam</option>
                 <option value="Sekret">Sekret</option>
-                <option value="Umpeg">Umpeg</option>
+                <option value="Umum & Kepegawaian">Umum & Kepegawaian</option>
                 <option value="Keuangan">Keuangan</option>
                 <option value="Program">Program</option>
                 <option value="UPTD">UPTD</option>
@@ -361,7 +344,7 @@
 
         <div class="form-group">
             <label for="pic">PIC Booking:</label>
-            <input type="text" id="pic" name="pic" required pattern="[A-Za-z ]+" title="Hanya huruf alfabet dan spasi diperbolehkan">
+            <input type="text" id="pic" name="pic" required>
         </div>
 
         <div class="form-group">
@@ -410,234 +393,7 @@
     </button>
 
     <script>
-        // Konfigurasi Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
-            authDomain: "jadwal-aula.firebaseapp.com",
-            projectId: "jadwal-aula",
-            storageBucket: "jadwal-aula.appspot.com",
-            messagingSenderId: "1075933905095",
-            appId: "1:1075933905095:web:c2836158c7d750516ebee2"
-        };
-
-        // Inisialisasi Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        const form = document.getElementById('bookingForm');
-        const scheduleTableBody = document.querySelector('#schedule tbody');
-
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const room = form.room.value;
-            const date = form.date.value;
-            const startTime = form.startTime.value;
-            const endTime = form.endTime.value;
-            const purpose = form.purpose.value;
-            const bidang = form.bidang.value;
-            const pic = form.pic.value;
-
-            db.collection('bookings')
-                .where('room', '==', room)
-                .where('date', '==', date)
-                .get()
-                .then(querySnapshot => {
-                    let isConflict = false;
-                    querySnapshot.forEach(doc => {
-                        const booking = doc.data();
-                        if ((startTime >= booking.startTime && startTime < booking.endTime) ||
-                            (endTime > booking.startTime && endTime <= booking.endTime) ||
-                            (startTime <= booking.startTime && endTime >= booking.endTime)) {
-                            isConflict = true;
-                        }
-                    });
-
-                    if (isConflict) {
-                        alert('Ruangan sudah terbooking pada waktu yang anda pilih, silahkan memilih jadwal lain!');
-                        location.reload();
-                    } else {
-                        db.collection('bookings').add({
-                            room, 
-                            date, 
-                            startTime, 
-                            endTime, 
-                            purpose, 
-                            bidang, 
-                            pic,
-                            status: 'Verifikasi' // Status default
-                        }).then(() => {
-                            form.reset();
-                            updateSchedule();
-                            alert('Data berhasil disimpan!');
-                        }).catch(error => {
-                            console.error('Error adding document: ', error);
-                            alert('Terjadi kesalahan saat menyimpan data!');
-                        });
-                    }
-                });
-        });
-
-        function updateSchedule() {
-            scheduleTableBody.innerHTML = '';
-            const today = new Date().toISOString().split('T')[0];
-            db.collection('bookings')
-                .orderBy('room')
-                .orderBy('date')
-                .orderBy('startTime')
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        const booking = doc.data();
-                        if (booking.date >= today) {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${booking.room}</td>
-                                <td>${booking.date}</td>
-                                <td>${booking.startTime} - ${booking.endTime}</td>
-                                <td>${booking.purpose}</td>
-                                <td>${booking.bidang}</td>
-                                <td>${booking.pic}</td>
-                                <td>${booking.status}</td> <!-- Tampilkan status -->
-                            `;
-                            scheduleTableBody.appendChild(row);
-                        }
-                    });
-                });
-        }
-
-        document.getElementById('pic').addEventListener('input', function(e) {
-            var inputValue = e.target.value;
-            var alphabetOnly = inputValue.replace(/[^A-Za-z ]/g, '');
-            if (inputValue !== alphabetOnly) {
-                e.target.value = alphabetOnly;
-            }
-        });
-
-        function isAdmin() {
-            // Ganti dengan logika pengecekan admin yang sesuai
-            return true; // Misalnya, return true jika user adalah admin
-        }
-
-        function printTable() {
-            const originalContents = document.body.innerHTML;
-            const printContents = document.getElementById('schedule').outerHTML;
-        
-            document.body.innerHTML = `
-                <html>
-                <head>
-                    <title>Print</title>
-                    <style>
-                        @media print {
-                            @page {
-                            size: 215mm 330mm; /* Ukuran kertas F4 potrait */
-                            margin: 20mm; /* Margin untuk kertas */
-                        }
-                    
-                        body {
-                            margin: 0;
-                            padding: 0;
-                            font-family: Arial, sans-serif;
-                        }
-                    
-                        .print-only {
-                            width: 100%;
-                            margin: 0;
-                            padding: 20px;
-                            background: #f9f9f9;
-                            border: 1px solid #ddd;
-                            box-sizing: border-box;
-                        }
-                    
-                        .print-only table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin: 0;
-                            padding: 0;
-                        }
-                    
-                        .print-only th, .print-only td {
-                            border: 1px solid #ddd;
-                            padding: 10px;
-                            text-align: left;
-                            font-size: 14px;
-                            box-sizing: border-box;
-                        }
-                    
-                        .print-only th {
-                            background-color: #4CAF50;
-                            color: white;
-                            font-weight: bold;
-                        }
-                    
-                        .print-only tr:nth-child(even) {
-                            background-color: #f2f2f2;
-                        }
-                    
-                        .print-only tr:hover {
-                            background-color: #ddd;
-                        }
-                    
-                        .print-header, .print-footer {
-                            width: 100%;
-                            text-align: center;
-                            position: fixed;
-                            left: 0;
-                            right: 0;
-                        }
-                    
-                        .print-header {
-                            top: 0;
-                            border-bottom: 1px solid #ddd;
-                            padding-bottom: 10px;
-                            margin-bottom: 20px;
-                        }
-                    
-                        .print-footer {
-                            bottom: 0;
-                            border-top: 1px solid #ddd;
-                            padding-top: 10px;
-                            margin-top: 20px;
-                        }
-                    
-                        .print-header img {
-                            height: 50px; /* Sesuaikan ukuran logo */
-                            vertical-align: middle;
-                            display: inline-block; /* Pastikan gambar ditampilkan secara inline */
-                        }
-                    
-                        .print-header h1 {
-                            margin: 0;
-                            font-size: 20px;
-                        }
-                    
-                        .print-footer p {
-                            margin: 0;
-                            font-size: 12px;
-                        }
-                    }
-                    </style>
-                </head>
-                <body>
-                    <div class="print-header">
-                        <img src="https://raw.githubusercontent.com/dputrkng/jadwal-aula/main/dputrkuningan.png" alt="Logo PU">
-                        <h1>Daftar Jadwal Pemakaian Ruangan</h1>
-                    </div>
-                    <div class="print-only">
-                        ${printContents}
-                    </div>
-                    
-                </body>
-                </html>
-            `;
-        
-            window.print();
-        
-            document.body.innerHTML = originalContents;
-        }
-
-        // Initial call to display bookings
-        updateSchedule();
+        const _0x54b4c1=_0x2233;(function(_0x266a22,_0x10cf57){const _0x4b62cc=_0x2233,_0x4bed8e=_0x266a22();while(!![]){try{const _0x588e38=-parseInt(_0x4b62cc(0x138))/0x1*(parseInt(_0x4b62cc(0x14e))/0x2)+-parseInt(_0x4b62cc(0x141))/0x3*(parseInt(_0x4b62cc(0x125))/0x4)+parseInt(_0x4b62cc(0x11d))/0x5*(-parseInt(_0x4b62cc(0x115))/0x6)+parseInt(_0x4b62cc(0x11c))/0x7*(parseInt(_0x4b62cc(0x11e))/0x8)+parseInt(_0x4b62cc(0x118))/0x9+parseInt(_0x4b62cc(0x13b))/0xa*(parseInt(_0x4b62cc(0x137))/0xb)+-parseInt(_0x4b62cc(0x13d))/0xc;if(_0x588e38===_0x10cf57)break;else _0x4bed8e['push'](_0x4bed8e['shift']());}catch(_0x32e3dd){_0x4bed8e['push'](_0x4bed8e['shift']());}}}(_0x31cb,0x194e8));const firebaseConfig={'apiKey':_0x54b4c1(0x123),'authDomain':_0x54b4c1(0x130),'projectId':_0x54b4c1(0x12f),'storageBucket':_0x54b4c1(0x11b),'messagingSenderId':_0x54b4c1(0x12a),'appId':_0x54b4c1(0x136)};firebase[_0x54b4c1(0x13c)](firebaseConfig);function _0x2233(_0x331ca4,_0x1a0f78){const _0x31cb21=_0x31cb();return _0x2233=function(_0x2233dc,_0x5ef1b6){_0x2233dc=_0x2233dc-0x115;let _0x1a3d97=_0x31cb21[_0x2233dc];return _0x1a3d97;},_0x2233(_0x331ca4,_0x1a0f78);}const db=firebase[_0x54b4c1(0x121)](),form=document[_0x54b4c1(0x149)]('bookingForm'),scheduleTableBody=document[_0x54b4c1(0x129)](_0x54b4c1(0x127));form[_0x54b4c1(0x12d)](_0x54b4c1(0x12c),function(_0x48c9d9){const _0x164be3=_0x54b4c1;_0x48c9d9[_0x164be3(0x12b)]();const _0x105464=form['room'][_0x164be3(0x12e)],_0x585c3f=form[_0x164be3(0x152)][_0x164be3(0x12e)],_0x2e99c3=form['startTime'][_0x164be3(0x12e)],_0x57c16e=form['endTime'][_0x164be3(0x12e)],_0x31449d=form[_0x164be3(0x128)][_0x164be3(0x12e)],_0x477173=form[_0x164be3(0x13a)][_0x164be3(0x12e)],_0x33c4d6=form[_0x164be3(0x116)][_0x164be3(0x12e)];db[_0x164be3(0x11f)](_0x164be3(0x13e))[_0x164be3(0x120)]('room','==',_0x105464)['where'](_0x164be3(0x152),'==',_0x585c3f)[_0x164be3(0x119)]()[_0x164be3(0x134)](_0x217ac1=>{const _0x427d81=_0x164be3;let _0x356da3=![];_0x217ac1[_0x427d81(0x131)](_0x529da7=>{const _0x42d700=_0x427d81,_0x167846=_0x529da7[_0x42d700(0x139)]();(_0x2e99c3>=_0x167846[_0x42d700(0x13f)]&&_0x2e99c3<_0x167846['endTime']||_0x57c16e>_0x167846[_0x42d700(0x13f)]&&_0x57c16e<=_0x167846[_0x42d700(0x132)]||_0x2e99c3<=_0x167846[_0x42d700(0x13f)]&&_0x57c16e>=_0x167846['endTime'])&&(_0x356da3=!![]);}),_0x356da3?(alert(_0x427d81(0x14a)),location[_0x427d81(0x154)]()):db[_0x427d81(0x11f)](_0x427d81(0x13e))[_0x427d81(0x150)]({'room':_0x105464,'date':_0x585c3f,'startTime':_0x2e99c3,'endTime':_0x57c16e,'purpose':_0x31449d,'bidang':_0x477173,'pic':_0x33c4d6,'status':_0x427d81(0x124)})[_0x427d81(0x134)](()=>{const _0x35ec7=_0x427d81;form[_0x35ec7(0x143)](),updateSchedule(),alert(_0x35ec7(0x11a));})[_0x427d81(0x14c)](_0x3178dd=>{const _0x3a5509=_0x427d81;console[_0x3a5509(0x117)](_0x3a5509(0x122),_0x3178dd),alert(_0x3a5509(0x151));});});});function updateSchedule(){const _0x48b554=_0x54b4c1;scheduleTableBody[_0x48b554(0x135)]='';const _0x2466e5=new Date()[_0x48b554(0x140)]()[_0x48b554(0x126)]('T')[0x0];db['collection'](_0x48b554(0x13e))[_0x48b554(0x144)](_0x48b554(0x146))['orderBy']('date')['orderBy']('startTime')[_0x48b554(0x119)]()['then'](_0x2eab09=>{_0x2eab09['forEach'](_0x524571=>{const _0x210e16=_0x2233,_0x11eaac=_0x524571['data']();if(_0x11eaac['date']>=_0x2466e5){const _0x5324cf=document[_0x210e16(0x145)]('tr');_0x5324cf[_0x210e16(0x135)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x11eaac[_0x210e16(0x146)]+_0x210e16(0x14b)+_0x11eaac['date']+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x11eaac[_0x210e16(0x13f)]+_0x210e16(0x148)+_0x11eaac['endTime']+'</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>'+_0x11eaac[_0x210e16(0x128)]+_0x210e16(0x14b)+_0x11eaac[_0x210e16(0x13a)]+_0x210e16(0x14b)+_0x11eaac['pic']+_0x210e16(0x14b)+_0x11eaac[_0x210e16(0x133)]+'</td>\x20<!--\x20Tampilkan\x20status\x20-->\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',scheduleTableBody[_0x210e16(0x147)](_0x5324cf);}});});}function isAdmin(){return!![];}function printTable(){const _0x2d43f9=_0x54b4c1,_0x5970ad=document[_0x2d43f9(0x14f)]['innerHTML'],_0x47e0dd=document[_0x2d43f9(0x149)]('schedule')[_0x2d43f9(0x14d)];document[_0x2d43f9(0x14f)][_0x2d43f9(0x135)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<html>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<head>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<title>Print</title>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<style>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20@media\x20print\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20@page\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20size:\x20215mm\x20330mm;\x20/*\x20Ukuran\x20kertas\x20F4\x20potrait\x20*/\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin:\x2020mm;\x20/*\x20Margin\x20untuk\x20kertas\x20*/\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20body\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20padding:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20font-family:\x20Arial,\x20sans-serif;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-only\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20100%;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20padding:\x2020px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20background:\x20#f9f9f9;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20border:\x201px\x20solid\x20#ddd;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20box-sizing:\x20border-box;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-only\x20table\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20100%;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20border-collapse:\x20collapse;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20padding:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-only\x20th,\x20.print-only\x20td\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20border:\x201px\x20solid\x20#ddd;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20padding:\x2010px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20text-align:\x20left;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20font-size:\x2014px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20box-sizing:\x20border-box;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-only\x20th\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20background-color:\x20#4CAF50;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20color:\x20white;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20font-weight:\x20bold;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-only\x20tr:nth-child(even)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20background-color:\x20#f2f2f2;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-only\x20tr:hover\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20background-color:\x20#ddd;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-header,\x20.print-footer\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20100%;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20text-align:\x20center;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20position:\x20fixed;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20left:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20right:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-header\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20top:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20border-bottom:\x201px\x20solid\x20#ddd;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20padding-bottom:\x2010px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin-bottom:\x2020px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-footer\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20bottom:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20border-top:\x201px\x20solid\x20#ddd;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20padding-top:\x2010px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin-top:\x2020px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-header\x20img\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20height:\x2050px;\x20/*\x20Sesuaikan\x20ukuran\x20logo\x20*/\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vertical-align:\x20middle;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20display:\x20inline-block;\x20/*\x20Pastikan\x20gambar\x20ditampilkan\x20secara\x20inline\x20*/\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-header\x20h1\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20font-size:\x2020px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20.print-footer\x20p\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20margin:\x200;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20font-size:\x2012px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</style>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</head>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<body>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22print-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22https://raw.githubusercontent.com/dputrkng/jadwal-aula/main/dputrkuningan.png\x22\x20alt=\x22Logo\x20PU\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h1>Daftar\x20Jadwal\x20Pemakaian\x20Ruangan</h1>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22print-only\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x47e0dd+_0x2d43f9(0x153),window[_0x2d43f9(0x142)](),document['body'][_0x2d43f9(0x135)]=_0x5970ad;}function _0x31cb(){const _0x557afe=['317352ZpTveq','bookings','startTime','toISOString','28884Jzncjh','print','reset','orderBy','createElement','room','appendChild','\x20-\x20','getElementById','Ruangan\x20sudah\x20terbooking\x20pada\x20waktu\x20yang\x20anda\x20pilih,\x20silahkan\x20memilih\x20jadwal\x20lain!','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','catch','outerHTML','10cSEfvq','body','add','Terjadi\x20kesalahan\x20saat\x20menyimpan\x20data!','date','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</body>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</html>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','reload','245772JYwIjB','pic','error','71487VWDIXA','get','Data\x20berhasil\x20disimpan!','jadwal-aula.appspot.com','54572CurRQr','5zHWAlq','176VVDACJ','collection','where','firestore','Error\x20adding\x20document:\x20','AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g','Verifikasi','44DcfGms','split','#schedule\x20tbody','purpose','querySelector','1075933905095','preventDefault','submit','addEventListener','value','jadwal-aula','jadwal-aula.firebaseapp.com','forEach','endTime','status','then','innerHTML','1:1075933905095:web:c2836158c7d750516ebee2','1268542vQYeBv','3561Tphcwl','data','bidang','10ZfgAkI','initializeApp'];_0x31cb=function(){return _0x557afe;};return _0x31cb();}updateSchedule();
 
     </script>
 </body>
