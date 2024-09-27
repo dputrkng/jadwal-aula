@@ -7,8 +7,8 @@
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Tambahkan CSS di sini -->
     <style>
+        /* Existing CSS styles */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #f0d748 0%, #b4b0b8 100%);
@@ -30,12 +30,7 @@
 
         h2 img {
             margin-right: 5px;
-            height: 80px; /* Sesuaikan ukuran ikon */
-        }
-
-        h2 img {
-            margin-right: 5px;
-            height: 50px; /* Sesuaikan ukuran ikon */
+            height: 50px;
         }
 
         form, table {
@@ -45,7 +40,7 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             padding: 18px;
             margin-bottom: 15px;
-            max-width: 450px;
+            max-width: 800px;
             width: 100%;
         }
 
@@ -131,114 +126,15 @@
             font-size: 16px;
             display: flex;
             align-items: center;
-            justify-content: center; /* Tengah-tengah konten tombol */
+            justify-content: center;
             transition: background-color 0.3s ease;
-        }
-
-        .print-button i {
-            margin-right: 8px;
-        }
-
-        .print-button:hover {
-            background-color: #176199;
-            color: #e2ece5;
-            font-weight: bold;
         }
 
         .centered-button-container {
             display: flex;
-            justify-content: center; /* Center the button container */
+            justify-content: center;
             width: 100%;
-            margin-top: 10px; /* Space above the button */
-        }
-
-        @media print {
-            @page {
-                size: 215mm 330mm; /* Ukuran kertas F4 potrait */
-                margin: 20mm; /* Margin untuk kertas */
-            }
-        
-            body {
-                margin: 0;
-                padding: 0;
-                font-family: Arial, sans-serif;
-            }
-        
-            .print-only {
-                width: 100%;
-                margin: 0;
-                padding: 20px;
-                background: #f9f9f9;
-                border: 1px solid #ddd;
-                box-sizing: border-box;
-            }
-        
-            .print-only table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 0;
-                padding: 0;
-            }
-        
-            .print-only th, .print-only td {
-                border: 1px solid #ddd;
-                padding: 10px;
-                text-align: left;
-                font-size: 14px;
-                box-sizing: border-box;
-            }
-        
-            .print-only th {
-                background-color: #4CAF50;
-                color: white;
-                font-weight: bold;
-            }
-        
-            .print-only tr:nth-child(even) {
-                background-color: #f2f2f2;
-            }
-        
-            .print-only tr:hover {
-                background-color: #ddd;
-            }
-        
-            .print-header, .print-footer {
-                width: 100%;
-                text-align: center;
-                position: fixed;
-                left: 0;
-                right: 0;
-            }
-        
-            .print-header {
-                top: 0;
-                border-bottom: 1px solid #ddd;
-                padding-bottom: 10px;
-                margin-bottom: 20px;
-            }
-        
-            .print-footer {
-                bottom: 0;
-                border-top: 1px solid #ddd;
-                padding-top: 10px;
-                margin-top: 20px;
-            }
-        
-            .print-header img {
-                height: 50px; /* Sesuaikan ukuran logo */
-                vertical-align: middle;
-                display: inline-block; /* Pastikan gambar ditampilkan secara inline */
-            }
-        
-            .print-header h1 {
-                margin: 0;
-                font-size: 20px;
-            }
-        
-            .print-footer p {
-                margin: 0;
-                font-size: 12px;
-            }
+            margin-top: 10px;
         }
 
         table {
@@ -247,28 +143,20 @@
             border-spacing: 0;
         }
 
-        th {
+        th, td {
             padding: 15px;
-            text-align: center; /* Memusatkan teks di header */
-            background-color: #447446;
-            color: white;
-            font-weight: bold;
+            text-align: left;
             border-bottom: 1px solid #ddd;
-        }
-
-        td {
-            padding: 15px;
-            text-align: left; /* Teks di isi tabel rata kiri */
-            border-bottom: 1px solid #ddd;
-            white-space: nowrap; /* Mencegah teks dari pembungkusan ke baris berikutnya */
-            overflow: hidden; /* Menyembunyikan teks yang meluber */
-            text-overflow: ellipsis; /* Menambahkan "..." pada teks yang terlalu panjang */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         th {
             background-color: #467448;
             color: white;
             font-weight: bold;
+            text-align: center;
         }
 
         tr:last-child td {
@@ -321,76 +209,61 @@
             color: white;
         }
 
+        /* New styles for popup */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #addBookingBtn {
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
     </style>
 </head>
 <body>
-
-    <!-- Tambahkan tombol akses admin -->
     <button class="admin-button" onclick="window.location.href='index.html'">Logout</button>
 
     <h2>
         <img src="lambang PU.png" alt="Logo PU1">
         <img src="dputrkng.png" alt="Logo PU">
     </h2>
-    <h3>
-        PESAN RUANGAN
-    </h3>
-    <form id="bookingForm">
-        <div class="form-group">
-            <label for="room">Ruangan:</label>
-            <select id="room" name="room" required>
-                <option value="Aula Atas">Aula Atas</option>
-                <option value="Ruang Rapat Bawah">Ruang Rapat Bawah</option>
-                <option value="Aula Luar">Aula Luar</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="bidang">Bidang:</label>
-            <select id="bidang" name="bidang" required>
-                <option value="Cipta Karya">Cipta Karya</option>
-                <option value="Bina Marga">Bina Marga</option>
-                <option value="Tata Ruang">Tata Ruang</option>
-                <option value="Bina konstruksi">Bina Konstruksi</option>
-                <option value="Sumber Daya Alam">Sumber Daya Alam</option>
-                <option value="Sekret">Sekret</option>
-                <option value="Umum & Kepegawaian">Umum & Kepegawaian</option>
-                <option value="Keuangan">Keuangan</option>
-                <option value="Program">Program</option>
-                <option value="UPTD">UPTD</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="pic">PIC Booking:</label>
-            <input type="text" id="pic" name="pic" required>
-        </div>
-
-        <div class="form-group">
-            <label for="date">Tanggal:</label>
-            <input type="date" id="date" name="date" required>
-        </div>
-
-        <div class="form-group">
-            <label for="startTime">Waktu Mulai:</label>
-            <input type="time" id="startTime" name="startTime" required>
-        </div>
-
-        <div class="form-group">
-            <label for="endTime">Waktu Selesai:</label>
-            <input type="time" id="endTime" name="endTime" required>
-        </div>
-
-        <div class="form-group">
-            <label for="purpose">Keperluan:</label>
-            <input type="text" id="purpose" name="purpose" required>
-        </div>
-
-        <button type="submit" id="submitBtn">Pesan</button>
-
-    </form>
 
     <h3>DAFTAR JADWAL PEMAKAIAN RUANGAN</h3>
+
+    <button id="addBookingBtn" onclick="openPopup()">Tambah Data</button>
+
     <table id="schedule">
         <thead>
             <tr>
@@ -401,7 +274,7 @@
                 <th>Bidang</th>
                 <th>PIC Booking</th>
                 <th>Status</th>
-                <th>Aksi</th> <!-- Kolom untuk tombol aksi -->
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -409,12 +282,68 @@
         </tbody>
     </table>
 
-    <button class="print-button" onclick="printTable()">
-        <i class="fas fa-print"></i> Cetak
-    </button>
+    <div id="bookingPopup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h3>PESAN RUANGAN</h3>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="room">Ruangan:</label>
+                    <select id="room" name="room" required>
+                        <option value="Aula Atas">Aula Atas</option>
+                        <option value="Ruang Rapat Bawah">Ruang Rapat Bawah</option>
+                        <option value="Aula Luar">Aula Luar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bidang">Bidang:</label>
+                    <select id="bidang" name="bidang" required>
+                        <option value="Cipta Karya">Cipta Karya</option>
+                        <option value="Bina Marga">Bina Marga</option>
+                        <option value="Tata Ruang">Tata Ruang</option>
+                        <option value="Bina konstruksi">Bina Konstruksi</option>
+                        <option value="Sumber Daya Alam">Sumber Daya Alam</option>
+                        <option value="Sekret">Sekret</option>
+                        <option value="Umum & Kepegawaian">Umum & Kepegawaian</option>
+                        <option value="Keuangan">Keuangan</option>
+                        <option value="Program">Program</option>
+                        <option value="UPTD">UPTD</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pic">PIC Booking:</label>
+                    <input type="text" id="pic" name="pic" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Tanggal:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="startTime">Waktu Mulai:</label>
+                    <input type="time" id="startTime" name="startTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endTime">Waktu Selesai:</label>
+                    <input type="time" id="endTime" name="endTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="purpose">Keperluan:</label>
+                    <input type="text" id="purpose" name="purpose" required>
+                </div>
+
+                <button type="submit" id="submitBtn">Pesan</button>
+            </form>
+        </div>
+    </div>
 
     <script>
-        // Konfigurasi Firebase
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
             authDomain: "jadwal-aula.firebaseapp.com",
@@ -423,15 +352,26 @@
             messagingSenderId: "1075933905095",
             appId: "1:1075933905095:web:c2836158c7d750516ebee2"
         };
-    
-        // Inisialisasi Firebase
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-    
+
         const form = document.getElementById('bookingForm');
         const scheduleTableBody = document.querySelector('#schedule tbody');
-        let editBookingId = null; // Variabel untuk menyimpan ID booking yang sedang diedit
-    
+        let editBookingId = null;
+
+        function openPopup() {
+            document.getElementById('bookingPopup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('bookingPopup').style.display = 'none';
+            form.reset();
+            editBookingId = null;
+            document.getElementById('submitBtn').textContent = 'Pesan';
+        }
+
         function checkForConflicts(room, date, startTime, endTime, callback) {
             console.log('Checking for conflicts...');
             db.collection('bookings')
@@ -442,7 +382,7 @@
                     let isConflict = false;
                     querySnapshot.forEach(doc => {
                         const booking = doc.data();
-                        if (doc.id !== editBookingId && // Ensure we're ignoring the current booking being edited
+                        if (doc.id !== editBookingId &&
                             ((startTime < booking.endTime && endTime > booking.startTime))) {
                             isConflict = true;
                         }
@@ -454,10 +394,10 @@
                     alert('Terjadi kesalahan saat memeriksa konflik jadwal!');
                 });
         }
-    
+
         function handleFormSubmit(event) {
             event.preventDefault();
-    
+
             const room = form.room.value;
             const date = form.date.value;
             const startTime = form.startTime.value;
@@ -465,13 +405,13 @@
             const purpose = form.purpose.value;
             const bidang = form.bidang.value;
             const pic = form.pic.value;
-    
+
             checkForConflicts(room, date, startTime, endTime, (isConflict) => {
                 if (isConflict) {
                     alert('Ruangan sudah terbooking pada waktu yang anda pilih, silahkan memilih jadwal lain!');
                 } else {
                     if (editBookingId) {
-                        // Mode edit
+                        // Edit mode
                         db.collection('bookings').doc(editBookingId).update({
                             room,
                             date,
@@ -482,16 +422,14 @@
                             pic
                         }).then(() => {
                             alert('Data berhasil diperbarui!');
-                            form.reset();
-                            editBookingId = null;
-                            document.getElementById('submitBtn').textContent = 'Pesan';
+                            closePopup();
                             updateSchedule();
                         }).catch(error => {
                             console.error('Error updating document:', error);
                             alert('Terjadi kesalahan saat memperbarui data!');
                         });
                     } else {
-                        // Mode tambah
+                        // Add mode
                         db.collection('bookings').add({
                             room,
                             date,
@@ -502,7 +440,7 @@
                             pic,
                             status: 'verifikasi'
                         }).then(() => {
-                            form.reset();
+                            closePopup();
                             updateSchedule();
                             alert('Data berhasil disimpan!');
                         }).catch(error => {
@@ -513,9 +451,9 @@
                 }
             });
         }
-    
+
         form.addEventListener('submit', handleFormSubmit);
-    
+
         function updateSchedule() {
             scheduleTableBody.innerHTML = '';
             const today = new Date().toISOString().split('T')[0];
@@ -536,7 +474,7 @@
                                 <td>${booking.purpose}</td>
                                 <td>${booking.bidang}</td>
                                 <td>${booking.pic}</td>
-                                <td>${booking.status}</td> <!-- Tampilkan status -->
+                                <td>${booking.status}</td>
                                 ${isAdmin() ? `
                                     <td>
                                         <button class="action-button edit-button" onclick="editBooking('${doc.id}')">Edit</button>
@@ -550,12 +488,12 @@
                     });
                 });
         }
-    
+
         function isAdmin() {
-            // Ganti dengan logika pengecekan admin yang sesuai
-            return true; // Misalnya, return true jika user adalah admin
+            // Replace with proper admin check logic
+            return true;
         }
-    
+
         function approveBooking(id) {
             db.collection('bookings').doc(id).update({
                 status: 'Approve'
@@ -567,17 +505,17 @@
                 alert('Terjadi kesalahan saat mengubah status!');
             });
         }
-    
+
         function editBooking(id) {
-            console.log('Edit Booking ID:', id); // Log ID booking yang sedang di-edit
-    
+            console.log('Edit Booking ID:', id);
+
             db.collection('bookings').doc(id).get()
                 .then(doc => {
                     if (doc.exists) {
                         const booking = doc.data();
-                        console.log('Retrieved booking for editing:', booking); // Log data booking yang berhasil diambil
-    
-                        // Masukkan data yang diambil ke dalam form untuk proses editing
+                        console.log('Retrieved booking for editing:', booking);
+
+                        // Populate form with booking data
                         form.room.value = booking.room;
                         form.date.value = booking.date;
                         form.startTime.value = booking.startTime;
@@ -585,9 +523,10 @@
                         form.purpose.value = booking.purpose;
                         form.bidang.value = booking.bidang;
                         form.pic.value = booking.pic;
-    
-                        editBookingId = id; // Set ID booking yang sedang diedit
-                        document.getElementById('submitBtn').textContent = 'Update'; // Ubah teks tombol
+
+                        editBookingId = id;
+                        document.getElementById('submitBtn').textContent = 'Update';
+                        openPopup();
                     } else {
                         alert('Data booking tidak ditemukan!');
                     }
@@ -597,7 +536,7 @@
                     alert('Terjadi kesalahan saat mengambil data booking!');
                 });
         }
-    
+
         function deleteBooking(id) {
             if (confirm('Anda yakin ingin menghapus booking ini?')) {
                 db.collection('bookings').doc(id).delete().then(() => {
@@ -609,127 +548,9 @@
                 });
             }
         }
-    
-        function printTable() {
-            const originalContents = document.body.innerHTML;
-            const printContents = document.getElementById('schedule').outerHTML;
-        
-            document.body.innerHTML = `
-                <html>
-                <head>
-                    <title>Print</title>
-                    <style>
-                        @media print {
-                            @page {
-                            size: 215mm 330mm; /* Ukuran kertas F4 potrait */
-                            margin: 20mm; /* Margin untuk kertas */
-                        }
-                    
-                        body {
-                            margin: 0;
-                            padding: 0;
-                            font-family: Arial, sans-serif;
-                        }
-                    
-                        .print-only {
-                            width: 100%;
-                            margin: 0;
-                            padding: 20px;
-                            background: #f9f9f9;
-                            border: 1px solid #ddd;
-                            box-sizing: border-box;
-                        }
-                    
-                        .print-only table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin: 0;
-                            padding: 0;
-                        }
-                    
-                        .print-only th, .print-only td {
-                            border: 1px solid #ddd;
-                            padding: 10px;
-                            text-align: left;
-                            font-size: 14px;
-                            box-sizing: border-box;
-                        }
-                    
-                        .print-only th {
-                            background-color: #4CAF50;
-                            color: white;
-                            font-weight: bold;
-                        }
-                    
-                        .print-only tr:nth-child(even) {
-                            background-color: #f2f2f2;
-                        }
-                    
-                        .print-only tr:hover {
-                            background-color: #ddd;
-                        }
-                    
-                        .print-header, .print-footer {
-                            width: 100%;
-                            text-align: center;
-                            position: fixed;
-                            left: 0;
-                            right: 0;
-                        }
-                    
-                        .print-header {
-                            top: 0;
-                            border-bottom: 1px solid #ddd;
-                            padding-bottom: 10px;
-                            margin-bottom: 20px;
-                        }
-                    
-                        .print-footer {
-                            bottom: 0;
-                            border-top: 1px solid #ddd;
-                            padding-top: 10px;
-                            margin-top: 20px;
-                        }
-                    
-                        .print-header img {
-                            height: 50px; /* Sesuaikan ukuran logo */
-                            vertical-align: middle;
-                            display: inline-block; /* Pastikan gambar ditampilkan secara inline */
-                        }
-                    
-                        .print-header h1 {
-                            margin: 0;
-                            font-size: 20px;
-                        }
-                    
-                        .print-footer p {
-                            margin: 0;
-                            font-size: 12px;
-                        }
-                    }
-                    </style>
-                </head>
-                <body>
-                    <div class="print-header">
-                        <img src="https://raw.githubusercontent.com/dputrkng/jadwal-aula/main/dputrkuningan.png" alt="Logo PU">
-                        <h1>Daftar Jadwal Pemakaian Ruangan</h1>
-                    </div>
-                    <div class="print-only">
-                        ${printContents}
-                    </div>
-                    
-                </body>
-                </html>
-            `;
-        
-            window.print();
-        
-            document.body.innerHTML = originalContents;
-        }
-    
+
         // Initial call to display bookings
         updateSchedule();
     </script>
-    
 </body>
 </html>
