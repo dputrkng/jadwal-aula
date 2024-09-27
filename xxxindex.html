@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>XXX Jadwal Pemakaian Ruangan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <!-- Firebase Firestore -->
@@ -40,8 +41,9 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             padding: 18px;
             margin-bottom: 15px;
-            max-width: 800px;
             width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         form {
@@ -137,6 +139,12 @@
             margin-top: 10px;
         }
 
+        /* Responsive table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: separate;
@@ -148,8 +156,6 @@
             text-align: left;
             border-bottom: 1px solid #ddd;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         th {
@@ -157,6 +163,9 @@
             color: white;
             font-weight: bold;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         tr:last-child td {
@@ -209,7 +218,7 @@
             color: white;
         }
 
-        /* New styles for popup */
+        /* Popup styles */
         .popup {
             display: none;
             position: fixed;
@@ -250,6 +259,36 @@
             margin-bottom: 20px;
             align-self: flex-start;
         }
+
+        /* Responsive styles */
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h2 img {
+                height: 30px;
+            }
+
+            .form-group {
+                min-width: 100%;
+            }
+
+            .popup-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .action-button {
+                padding: 3px 6px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -264,23 +303,25 @@
 
     <button id="addBookingBtn" onclick="openPopup()">Tambah Data</button>
 
-    <table id="schedule">
-        <thead>
-            <tr>
-                <th>Ruangan</th>
-                <th>Tanggal</th>
-                <th>Waktu</th>
-                <th>Keperluan</th>
-                <th>Bidang</th>
-                <th>PIC Booking</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data jadwal akan muncul di sini -->
-        </tbody>
-    </table>
+    <div class="table-container">
+        <table id="schedule">
+            <thead>
+                <tr>
+                    <th>Ruangan</th>
+                    <th>Tanggal</th>
+                    <th>Waktu</th>
+                    <th>Keperluan</th>
+                    <th>Bidang</th>
+                    <th>PIC Booking</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data jadwal akan muncul di sini -->
+            </tbody>
+        </table>
+    </div>
 
     <div id="bookingPopup" class="popup">
         <div class="popup-content">
