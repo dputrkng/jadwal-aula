@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>XXX Jadwal Pemakaian Ruangan</title>
+    <title>X Jadwal Pemakaian Ruangan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -23,9 +23,16 @@
             line-height: 1.6;
         }
 
+        /* Main content styles */
+        .main-content {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
         /* Modern header styles */
         .header {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 252, 252, 0.74);
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px 0;
@@ -34,15 +41,8 @@
             z-index: 1000;
         }
 
-        /* Main content styles */
-        .main-content {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
         .header-content {
-            max-width: 100%;
+            max-width: 80%;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -219,11 +219,6 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        h3 {
-            color: #0e0101;
-            margin-top: 12px;
-        }
-
         .admin-button {
             position: fixed;
             top: 10px;
@@ -355,14 +350,12 @@
                 <img src="lambang PU.png" alt="Logo PU1" class="logo">
                 <img src="dputrkng.png" alt="Logo PU" class="logo">
             </div>
-            <h1 class="title">Sistem Pemesanan Ruangan</h1>
+            <h1 class="title">DAFTAR JADWAL PEMAKAIAN RUANGAN</h1>
+            <button class="admin-button" onclick="window.location.href='index.html'">Logout</button>
         </div>
     </header>
 
     <div class="main-content">
-        <button class="admin-button" onclick="window.location.href='index.html'">Logout</button>
-
-        <h3>DAFTAR JADWAL PEMAKAIAN RUANGAN</h3>
 
         <button id="addBookingBtn" onclick="openPopup()">Tambah Data</button>
 
