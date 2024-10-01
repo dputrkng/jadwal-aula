@@ -1,20 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Jadwal Pemakaian Ruangan</title>
     <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        /* Existing CSS styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #f0d748 0%, #b4b0b8 100%);
@@ -22,15 +16,7 @@
             color: #333;
             line-height: 1.6;
         }
-
-        /* Main content styles */
-        .main-content {
-            max-width: 100%;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        /* Modern header styles */
+        .main-content { max-width: 100%; margin: 30px auto; padding: 0 20px; }
         .header {
             background: rgba(255, 252, 252, 0.74);
             backdrop-filter: blur(10px);
@@ -40,7 +26,6 @@
             top: 0;
             z-index: 1000;
         }
-
         .header-content {
             max-width: 70%;
             margin: 0 auto;
@@ -49,22 +34,8 @@
             align-items: center;
             padding: 0 20px;
         }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo {
-            height: 60px;
-            margin-right: 15px;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
+        .logo { height: 60px; margin-right: 15px; transition: transform 0.3s ease; }
+        .logo:hover { transform: scale(1.05); }
         .title {
             font-size: 24px;
             font-weight: bold;
@@ -72,7 +43,6 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
         h3 {
             color: #333;
             margin-bottom: 20px;
@@ -80,18 +50,6 @@
             font-size: 28px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
-
-        h2 {
-            color: #050425;
-            display: flex;
-            align-items: center;
-        }
-
-        h2 img {
-            margin-right: 5px;
-            height: 50px;
-        }
-
         form, table {
             background: rgba(233, 201, 201, 0.9);
             backdrop-filter: blur(10px);
@@ -100,28 +58,18 @@
             padding: 18px;
             margin-bottom: 15px;
             width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
         }
-
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .form-group {
-            flex: 1;
-            min-width: 220px;
+        form { display: flex; flex-wrap: wrap; gap: 10px; }
+        .form-group { 
+            flex: 1; 
+            min-width: 220px; 
             animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .form-group:nth-child(1) { animation-delay: 0.1s; }
         .form-group:nth-child(2) { animation-delay: 0.2s; }
         .form-group:nth-child(3) { animation-delay: 0.3s; }
@@ -129,37 +77,29 @@
         .form-group:nth-child(5) { animation-delay: 0.5s; }
         .form-group:nth-child(6) { animation-delay: 0.6s; }
         .form-group:nth-child(7) { animation-delay: 0.7s; }
-
         label {
             display: block;
             margin-bottom: 8px;
             color: #252525;
+            font-weight: 500;
+            font-size: 14px;
         }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="time"],
-        select {
+        input[type="text"], input[type="date"], input[type="time"], select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 5px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            box-sizing: border-box;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
         }
-
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        input[type="time"]:focus,
-        select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
         }
-
         button {
-            width: auto;
             background-color: #f09e07d4;
             color: white;
             padding: 8px 16px;
@@ -169,40 +109,10 @@
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
-
-        button:hover {
-            background-color: #3ec715;
-            color: #000802;
-            font-weight: bold;
-        }
-
-        .centered-button-container {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* Responsive table styles */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            white-space: wrap;
-        }
-
+        button:hover { background-color: #3ec715; color: #000802; font-weight: bold; }
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
         th {
             background-color: #467448;
             color: white;
@@ -212,53 +122,8 @@
             top: 0;
             z-index: 1;
         }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .admin-button {
-            position: fixed;
-            top: 110px;
-            right: 10px;
-            background-color: #007BFF;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .admin-button:hover {
-            background-color: #0056b3;
-        }
-
-        .action-button {
-            padding: 5px 10px;
-            margin-right: 5px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .delete-button {
-            background-color: #FF4C4C;
-            color: white;
-        }
-
-        .edit-button {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        /* Popup styles */
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: rgba(255, 255, 255, 0.1); }
         .popup {
             display: none;
             position: fixed;
@@ -270,7 +135,6 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
         }
-
         .popup-content {
             background-color: #fefefe;
             margin: 15% auto;
@@ -280,69 +144,89 @@
             max-width: 600px;
             border-radius: 15px;
         }
-
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
             cursor: pointer;
         }
-
         #addBookingBtn {
             margin-bottom: 20px;
-            align-self: flex-start;
+            background-color: #a86f06d4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
         }
 
-        /* Responsive styles */
-        @media screen and (max-width: 800px) {
-            body {
-                padding: 10px;
-            }
-
-            h2 img {
-                height: 30px;
-            }
-
-            .form-group {
-                min-width: 100%;
-            }
-
-            .popup-content {
-                width: 95%;
-                margin: 5% auto;
-            }
-
-            th, td {
-                padding: 10px;
-                font-size: 14px;
-            }
-
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .logo-container {
-                margin-bottom: 10px;
-            }
-
-            .logo {
-                height: 50px;
-            }
-
-            .title {
-                font-size: 20px;
-            }
-
+        #addBookingBtn:hover {
+            background-color: #3ec913b9;
+            color: #000802;
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
+        #addBookingBtn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        #addBookingBtn:hover::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(240, 158, 7, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(240, 158, 7, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(240, 158, 7, 0);
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        .note {
+            font-size: 12px;
+            color: #0a33e9;
+            margin-top: 10px;
+            text-align: center;
+            background-color: rgba(240, 158, 7, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -377,6 +261,11 @@
                 </tbody>
             </table>
         </div>
+        <!-- Catatan petunjuk penggunaan web -->
+        <p class="note">
+            Untuk memesan ruangan, klik "Tambah Data" dan pastikan jadwal ruangan belum terpakai pada waktu yang Anda pilih. 
+            <br>Status "verifikasi" berarti pemesanan Anda sedang diproses oleh admin.
+        </p>
 
         <div id="bookingPopup" class="popup">
             <div class="popup-content">
@@ -391,7 +280,6 @@
                             <option value="Aula Luar">Aula Luar</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="bidang">Bidang:</label>
                         <select id="bidang" name="bidang" required>
@@ -407,32 +295,26 @@
                             <option value="UPTD">UPTD</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="pic">PIC Booking:</label>
                         <input type="text" id="pic" name="pic" required>
                     </div>
-
                     <div class="form-group">
                         <label for="date">Tanggal:</label>
                         <input type="date" id="date" name="date" required>
                     </div>
-
                     <div class="form-group">
                         <label for="startTime">Waktu Mulai:</label>
                         <input type="time" id="startTime" name="startTime" required>
                     </div>
-
                     <div class="form-group">
                         <label for="endTime">Waktu Selesai:</label>
                         <input type="time" id="endTime" name="endTime" required>
                     </div>
-
                     <div class="form-group">
                         <label for="purpose">Keperluan:</label>
                         <input type="text" id="purpose" name="purpose" required>
                     </div>
-
                     <button type="submit" id="submitBtn">Pesan</button>
                 </form>
             </div>
@@ -440,7 +322,6 @@
     </div>
 
     <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAgRYNgH-3HsnFVuJXAz5AbiBsU-Xe8o2g",
             authDomain: "jadwal-aula.firebaseapp.com",
@@ -450,7 +331,6 @@
             appId: "1:1075933905095:web:c2836158c7d750516ebee2"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -470,7 +350,6 @@
         }
 
         function checkForConflicts(room, date, startTime, endTime, callback) {
-            console.log('Checking for conflicts...');
             db.collection('bookings')
                 .where('room', '==', room)
                 .where('date', '==', date)
@@ -495,56 +374,32 @@
         function handleFormSubmit(event) {
             event.preventDefault();
 
-            const room = form.room.value;
-            const date = form.date.value;
-            const startTime = form.startTime.value;
-            const endTime = form.endTime.value;
-            const purpose = form.purpose.value;
-            const bidang = form.bidang.value;
-            const pic = form.pic.value;
+            const bookingData = {
+                room: form.room.value,
+                date: form.date.value,
+                startTime: form.startTime.value,
+                endTime: form.endTime.value,
+                purpose: form.purpose.value,
+                bidang: form.bidang.value,
+                pic: form.pic.value
+            };
 
-            checkForConflicts(room, date, startTime, endTime, (isConflict) => {
+            checkForConflicts(bookingData.room, bookingData.date, bookingData.startTime, bookingData.endTime, (isConflict) => {
                 if (isConflict) {
                     alert('Ruangan sudah terbooking pada waktu yang anda pilih, silahkan memilih jadwal lain!');
                 } else {
-                    if (editBookingId) {
-                        // Edit mode
-                        db.collection('bookings').doc(editBookingId).update({
-                            room,
-                            date,
-                            startTime,
-                            endTime,
-                            purpose,
-                            bidang,
-                            pic
-                        }).then(() => {
-                            alert('Data berhasil diperbarui!');
-                            closePopup();
-                            updateSchedule();
-                        }).catch(error => {
-                            console.error('Error updating document:', error);
-                            alert('Terjadi kesalahan saat memperbarui data!');
-                        });
-                    } else {
-                        // Add mode
-                        db.collection('bookings').add({
-                            room,
-                            date,
-                            startTime,
-                            endTime,
-                            purpose,
-                            bidang,
-                            pic,
-                            status: 'verifikasi'
-                        }).then(() => {
-                            closePopup();
-                            updateSchedule();
-                            alert('Data berhasil disimpan!');
-                        }).catch(error => {
-                            console.error('Error adding document:', error);
-                            alert('Terjadi kesalahan saat menyimpan data!');
-                        });
-                    }
+                    const operation = editBookingId
+                        ? db.collection('bookings').doc(editBookingId).update(bookingData)
+                        : db.collection('bookings').add({ ...bookingData, status: 'verifikasi' });
+
+                    operation.then(() => {
+                        alert(editBookingId ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!');
+                        closePopup();
+                        updateSchedule();
+                    }).catch(error => {
+                        console.error('Error handling document:', error);
+                        alert('Terjadi kesalahan saat memproses data!');
+                    });
                 }
             });
         }
@@ -572,71 +427,15 @@
                                 <td>${booking.bidang}</td>
                                 <td>${booking.pic}</td>
                                 <td>${booking.status}</td>
-                              `;
+                            `;
                             scheduleTableBody.appendChild(row);
                         }
                     });
-                });
-        }
-
-        function isAdmin() {
-            // Replace with proper admin check logic
-            return true;
-        }
-
-        function approveBooking(id) {
-            db.collection('bookings').doc(id).update({
-                status: 'Approve'
-            }).then(() => {
-                alert('Booking approved!');
-                updateSchedule();
-            }).catch(error => {
-                console.error('Error approving booking: ', error);
-                alert('Terjadi kesalahan saat mengubah status!');
-            });
-        }
-
-        function editBooking(id) {
-            console.log('Edit Booking ID:', id);
-
-            db.collection('bookings').doc(id).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const booking = doc.data();
-                        console.log('Retrieved booking for editing:', booking);
-
-                        // Populate form with booking data
-                        form.room.value = booking.room;
-                        form.date.value = booking.date;
-                        form.startTime.value = booking.startTime;
-                        form.endTime.value = booking.endTime;
-                        form.purpose.value = booking.purpose;
-                        form.bidang.value = booking.bidang;
-                        form.pic.value = booking.pic;
-
-                        editBookingId = id;
-                        document.getElementById('submitBtn').textContent = 'Update';
-                        openPopup();
-                    } else {
-                        alert('Data booking tidak ditemukan!');
-                    }
                 })
                 .catch(error => {
-                    console.error('Error getting document: ', error);
-                    alert('Terjadi kesalahan saat mengambil data booking!');
+                    console.error('Error getting documents: ', error);
+                    alert('Terjadi kesalahan saat mengambil data jadwal!');
                 });
-        }
-
-        function deleteBooking(id) {
-            if (confirm('Anda yakin ingin menghapus booking ini?')) {
-                db.collection('bookings').doc(id).delete().then(() => {
-                    updateSchedule();
-                    alert('Booking deleted!');
-                }).catch(error => {
-                    console.error('Error deleting booking: ', error);
-                    alert('Terjadi kesalahan saat menghapus data!');
-                });
-            }
         }
 
         // Initial call to display bookings
