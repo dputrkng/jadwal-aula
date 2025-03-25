@@ -14,6 +14,22 @@ const form = document.getElementById('bookingForm');
 const scheduleTableBody = document.querySelector('#schedule tbody');
 let editBookingId = null;
 
+// Modification for index.html script.js
+// Add this function at the end of the existing script
+function checkAuthentication() {
+    const userRole = sessionStorage.getItem('userRole');
+    if (!userRole) {
+        // If no user is logged in, redirect to login page
+        window.location.href = 'login.html';
+    }
+}
+
+// Add logout functionality
+function logout() {
+    sessionStorage.removeItem('userRole');
+    window.location.href = 'login.html';
+}
+
 function openPopup() {
     document.getElementById('bookingPopup').style.display = 'block';
 }
