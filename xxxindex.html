@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>X Jadwal Pemakaian Ruangan</title>
-    
+    <title>XXX Jadwal Pemakaian Ruangan</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <!-- Firebase Firestore -->
@@ -471,6 +471,20 @@
             document.getElementById('submitBtn').textContent = 'Pesan';
         }
 
+        // Modification for xxxindex.html script
+        function checkAdminAuthentication() {
+            const userRole = sessionStorage.getItem('userRole');
+            if (!userRole || userRole !== 'admin') {
+                // If not an admin or not logged in, redirect to login page
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Replace the existing isAdmin() function in xxxindex.html with this:
+        function isAdmin() {
+            return sessionStorage.getItem('userRole') === 'admin';
+        }
+
         function checkForConflicts(room, date, startTime, endTime, callback) {
             console.log('Checking for conflicts...');
             db.collection('bookings')
@@ -553,6 +567,12 @@
 
         form.addEventListener('submit', handleFormSubmit);
 
+        function getDayOfWeek(dateString) {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const date = new Date(dateString);
+            return days[date.getDay()];
+        }
+        
         function updateSchedule() {
             scheduleTableBody.innerHTML = '';
             const today = new Date().toISOString().split('T')[0];
@@ -566,9 +586,10 @@
                         const booking = doc.data();
                         if (booking.date >= today) {
                             const row = document.createElement('tr');
+                            const dayOfWeek = getDayOfWeek(booking.date);
                             row.innerHTML = `
                                 <td>${booking.room}</td>
-                                <td>${booking.date}</td>
+                                <td>${booking.date} (${dayOfWeek})</td>
                                 <td>${booking.startTime} - ${booking.endTime}</td>
                                 <td>${booking.purpose}</td>
                                 <td>${booking.bidang}</td>
@@ -586,11 +607,6 @@
                         }
                     });
                 });
-        }
-
-        function isAdmin() {
-            // Replace with proper admin check logic
-            return true;
         }
 
         function approveBooking(id) {
