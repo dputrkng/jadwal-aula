@@ -343,6 +343,43 @@
 
         }
 
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            max-width: 600px;  /* supaya nggak full page */
+        }
+
+        .filter-container label {
+            font-weight: bold;
+        }
+
+        .filter-container input,
+        .filter-container button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-container button {
+            background: #f09e07;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+
+        .filter-container button:hover {
+            background: #3ec715;
+            color: #000;
+        }
+
     </style>
 </head>
 <body>
@@ -360,6 +397,14 @@
         <h3>DAFTAR JADWAL PEMAKAIAN RUANGAN</h3>
         <button id="addBookingBtn" onclick="openPopup()">Tambah Data</button>
         <button class="admin-button" onclick="window.location.href='index.html'">Logout</button>
+        <div class="filter-container">
+            <label for="startDate">Tanggal Awal:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">Tanggal Akhir:</label>
+            <input type="date" id="endDate">
+            <button onclick="updateSchedule()">Tampilkan</button>
+        </div>
+
         <div class="table-container">
             <table id="schedule">
                 <thead>
@@ -374,7 +419,7 @@
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="scheduleTableBody">
                     <!-- Data jadwal akan muncul di sini -->
                 </tbody>
             </table>
@@ -573,40 +618,117 @@
             return days[date.getDay()];
         }
         
-        function updateSchedule() {
-            scheduleTableBody.innerHTML = '';
-            const today = new Date().toISOString().split('T')[0];
-            db.collection('bookings')
-                .orderBy('room')
+        // Auto set default filter: hari ini - hari ini+7
+        window.onload = () => {
+            const today = new Date();
+            const sevenDaysLater = new Date();
+            sevenDaysLater.setDate(today.getDate() + 14);
+
+            document.getElementById('startDate').value = today.toISOString().split('T')[0];
+            document.getElementById('endDate').value = sevenDaysLater.toISOString().split('T')[0];
+
+            updateSchedule();
+        };
+
+        // Guard: pastikan skrip ini hanya aktif sekali
+        if (!window.__SCHEDULE_SCRIPT_LOADED__) {
+        window.__SCHEDULE_SCRIPT_LOADED__ = true;
+
+        let __renderVersion = 0;
+
+        async function updateSchedule() {
+            const oldBody = document.getElementById('scheduleTableBody');
+            if (!oldBody) {
+            console.error('Elemen <tbody id="scheduleTableBody"> tidak ditemukan.');
+            return;
+            }
+
+            // Debug kecil: deteksi kalau ada <tbody> ber-ID sama lebih dari satu
+            const dupTbody = document.querySelectorAll('#scheduleTableBody').length;
+            if (dupTbody > 1) console.warn('Peringatan: ada', dupTbody, 'elemen dengan id="scheduleTableBody"');
+
+            // Siapkan <tbody> baru yang masih kosong
+            const newBody = oldBody.cloneNode(false); // clone tanpa child, id tetap sama
+
+            // Token render untuk cegah overlap
+            const myVersion = ++__renderVersion;
+
+            // Baca filter tanggal
+            const startDate = (document.getElementById('startDate')?.value || new Date().toISOString().split('T')[0]).trim();
+            const endDate   = (document.getElementById('endDate')?.value   || '9999-12-31').trim();
+
+            try {
+            // Query Firestore langsung by range + order yang sederhana & stabil
+            const snap = await db.collection('bookings')
+                .where('date', '>=', startDate)
+                .where('date', '<=', endDate)
                 .orderBy('date')
                 .orderBy('startTime')
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(doc => {
-                        const booking = doc.data();
-                        if (booking.date >= today) {
-                            const row = document.createElement('tr');
-                            const dayOfWeek = getDayOfWeek(booking.date);
-                            row.innerHTML = `
-                                <td>${booking.room}</td>
-                                <td>${booking.date} (${dayOfWeek})</td>
-                                <td>${booking.startTime} - ${booking.endTime}</td>
-                                <td>${booking.purpose}</td>
-                                <td>${booking.bidang}</td>
-                                <td>${booking.pic}</td>
-                                <td>${booking.status}</td>
-                                ${isAdmin() ? `
-                                    <td>
-                                        <button class="action-button edit-button" onclick="editBooking('${doc.id}')">Edit</button>
-                                        <button class="action-button delete-button" onclick="deleteBooking('${doc.id}')">Hapus</button>
-                                        <button class="action-button" onclick="approveBooking('${doc.id}')">Approve</button>
-                                    </td>` 
-                                    : ''}
-                            `;
-                            scheduleTableBody.appendChild(row);
-                        }
-                    });
-                });
+                .get();
+
+            // Jika ada render yang lebih baru, hentikan yang lama
+            if (myVersion !== __renderVersion) return;
+
+            // Helper normalisasi untuk kunci unik
+            const norm = s => (s ?? '').toString().trim().toLowerCase();
+            const pad2 = n => n.toString().padStart(2, '0');
+            const normTime = t => {
+                if (!t) return '';
+                const [h, m='0'] = t.toString().trim().split(':');
+                const hh = isNaN(parseInt(h,10)) ? h : pad2(parseInt(h,10));
+                const mm = isNaN(parseInt(m,10)) ? m : pad2(parseInt(m,10));
+                return `${hh}:${mm}`;
+            };
+
+            const seenDoc = new Set(); // de-dupe by document ID
+            const seenKey = new Set(); // de-dupe by normalized composite key
+
+            snap.forEach(doc => {
+                if (seenDoc.has(doc.id)) return; // jaga-jaga
+                seenDoc.add(doc.id);
+
+                const b = doc.data() || {};
+                const key = [
+                norm(b.room),
+                (b.date || '').toString().trim(),   // date sudah ISO, cukup trim
+                normTime(b.startTime),
+                normTime(b.endTime)
+                ].join('|');
+
+                if (seenKey.has(key)) return; // buang jika kembar secara konten
+                seenKey.add(key);
+
+                const dayOfWeek = typeof getDayOfWeek === 'function' ? getDayOfWeek(b.date) : '';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${b.room || ''}</td>
+                <td>${b.date || ''}${dayOfWeek ? ` (${dayOfWeek})` : ''}</td>
+                <td>${(b.startTime || '')} - ${(b.endTime || '')}</td>
+                <td>${b.purpose || ''}</td>
+                <td>${b.bidang || ''}</td>
+                <td>${b.pic || ''}</td>
+                <td>${b.status || ''}</td>
+                ${typeof isAdmin === 'function' && isAdmin() ? `
+                    <td>
+                    <button class="action-button edit-button" onclick="editBooking('${doc.id}')">Edit</button>
+                    <button class="action-button delete-button" onclick="deleteBooking('${doc.id}')">Hapus</button>
+                    <button class="action-button" onclick="approveBooking('${doc.id}')">Approve</button>
+                    </td>` : ''
+                }
+                `;
+                newBody.appendChild(row);
+            });
+
+            // Ganti <tbody> lama dengan yang baru (menghapus semua tampilan sebelumnya dalam satu operasi)
+            oldBody.parentNode.replaceChild(newBody, oldBody);
+
+            } catch (err) {
+            console.error('Error ambil data:', err);
+            }
+        }
+
+        // Ekspor ke global (kalau dipanggil dari tombol)
+        window.updateSchedule = updateSchedule;
         }
 
         function approveBooking(id) {
